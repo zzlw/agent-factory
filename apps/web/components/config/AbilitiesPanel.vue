@@ -11,6 +11,7 @@ import {
 } from '@tanstack/vue-table'
 import { ArrowDown, ArrowUp, ArrowUpDown, BookOpen, Puzzle, Wrench } from 'lucide-vue-next'
 import { h } from 'vue'
+import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 
 const agentStore = useAgentStore()
@@ -26,6 +27,12 @@ const typeIcons = {
   skill: Puzzle,
   knowledgeBase: BookOpen,
 }
+
+const integrationLabels = {
+  mcp: 'MCP',
+  builtin: '内置',
+  custom: '自定义',
+} as const
 
 const search = ref('')
 const capabilities = computed(() => agentStore.config.capabilities)
@@ -55,7 +62,13 @@ const columns = [
   }),
   columnHelper.accessor('integration', {
     header: '接入',
-    cell: (info) => (info.getValue() === 'mcp' ? 'MCP' : info.getValue()),
+    cell: (info) => {
+      const integration = info.getValue()
+      if (integration === 'mcp') {
+        return h(Badge, { variant: 'outline' }, 'MCP')
+      }
+      return integrationLabels[integration]
+    },
   }),
   columnHelper.display({
     id: 'enabled',
