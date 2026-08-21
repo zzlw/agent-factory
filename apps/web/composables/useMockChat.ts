@@ -80,13 +80,16 @@ export function useMockChat() {
 
       for (const message of reply.messages) {
         messages.value.push(message)
+        // 只把回复里的原始对象 push 进数组后，数组里拿到的才是响应式代理；
+        // 直接改原始对象不会触发 UI 更新，因此流式改写必须经由代理引用。
+        const renderedMessage = messages.value[messages.value.length - 1] as Message
         traceByMessage.value[message.id] = reply.trace.filter(
           (step) => step.messageId === message.id,
         )
         if (message.role === 'assistant') {
           const fullContent = message.content
-          message.content = ''
-          streamContent(message, fullContent)
+          renderedMessage.content = ''
+          streamContent(renderedMessage, fullContent)
         }
       }
       configChanged.value = false
