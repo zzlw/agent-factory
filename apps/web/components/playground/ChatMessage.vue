@@ -50,27 +50,20 @@ async function copyMessage() {
     </div>
   </Message>
 
-  <!-- tool 消息：折叠卡片只保留调用摘要，参数/结果用紧凑行内文本，避免 CodeBlock 撑高 -->
-  <Tool v-else class="mb-0">
-    <ToolHeader
-      type="dynamic-tool"
-      :tool-name="message.toolCall?.name ?? '工具调用'"
-      :title="message.toolCall?.name ?? '工具调用'"
-      state="output-available"
-    />
-    <ToolContent>
-      <div class="space-y-2 px-4 py-3 text-sm">
-        <div class="flex items-start gap-2">
-          <span class="shrink-0 text-muted-foreground">参数</span>
-          <code class="min-w-0 break-all rounded bg-muted/60 px-1.5 py-0.5 font-mono text-xs">
-            {{ message.toolCall?.args }}
-          </code>
-        </div>
-        <div class="flex items-start gap-2">
-          <span class="shrink-0 text-muted-foreground">结果</span>
-          <span class="min-w-0 break-words">{{ message.toolCall?.result || message.content }}</span>
-        </div>
-      </div>
-    </ToolContent>
-  </Tool>
+  <!-- tool 消息：与 Trace 同款的轻量行内折叠，只在消息流里占一行 -->
+  <details v-else class="group/tool text-[13px] text-muted-foreground">
+    <summary
+      class="inline-flex w-fit cursor-pointer select-none items-center gap-1.5 rounded px-1 py-0.5 -ml-1 hover:text-foreground [&::-webkit-details-marker]:hidden"
+    >
+      <ChevronRightIcon class="size-3 transition-transform group-open/tool:rotate-90" />
+      <span class="font-medium text-foreground">
+        调用 {{ message.toolCall?.name ?? '工具' }}
+      </span>
+      <span class="truncate">{{ message.toolCall?.result || message.content }}</span>
+    </summary>
+    <div class="mt-1.5 space-y-1 rounded-md bg-muted/40 px-2.5 py-2">
+      <div>参数：<code class="font-mono text-xs">{{ message.toolCall?.args }}</code></div>
+      <div>结果：{{ message.toolCall?.result || message.content }}</div>
+    </div>
+  </details>
 </template>
