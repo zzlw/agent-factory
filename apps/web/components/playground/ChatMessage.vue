@@ -25,10 +25,14 @@ async function copyMessage() {
     :from="message.role === 'user' ? 'user' : 'assistant'"
   >
     <div class="flex min-w-0 flex-col gap-2">
-      <div class="flex items-center gap-0.5">
+      <div class="flex w-fit items-center gap-0.5">
         <MessageContent :class="message.role === 'user' ? 'ring-1 ring-border' : ''">
           <!-- 助手消息按 Markdown 渲染（mock 回复含列表/加粗等结构） -->
-          <MessageResponse v-if="message.role === 'assistant'" :content="message.content" />
+          <MessageResponse
+            v-if="message.role === 'assistant'"
+            :content="message.content"
+            class="!w-fit"
+          />
           <template v-else>{{ message.content }}</template>
         </MessageContent>
         <Button
