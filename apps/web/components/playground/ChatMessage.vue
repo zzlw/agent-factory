@@ -16,18 +16,6 @@ async function copyMessage() {
     copied.value = false
   }, 1500)
 }
-
-// toolCall.args 是 JSON 字符串，容错解析后交给 ToolInput 展示
-const toolInput = computed(() => {
-  if (!props.message.toolCall) {
-    return undefined
-  }
-  try {
-    return JSON.parse(props.message.toolCall.args)
-  } catch {
-    return props.message.toolCall.args
-  }
-})
 </script>
 
 <template>
@@ -62,7 +50,7 @@ const toolInput = computed(() => {
     </div>
   </Message>
 
-  <!-- tool 消息：折叠卡片展示调用参数与结果（对齐 ai-elements 工具调用展示惯例） -->
+  <!-- tool 消息：折叠卡片只保留调用摘要，参数/结果用紧凑行内文本，避免 CodeBlock 撑高 -->
   <Tool v-else class="mb-0">
     <ToolHeader
       type="dynamic-tool"
@@ -71,15 +59,18 @@ const toolInput = computed(() => {
       state="output-available"
     />
     <ToolContent>
-      <ToolInput v-if="toolInput !== undefined" :input="toolInput" />
-      <ToolOutput
-        v-if="message.toolCall"
-        :output="message.toolCall.result"
-        :error-text="undefined"
-      />
-      <p v-else class="p-4 text-sm text-muted-foreground">
-        {{ message.content }}
-      </p>
+      <div class="space-y-2 px-4 py-3 text-sm">
+        <div class="flex items-start gap-2">
+          <span class="shrink-0 text-muted-foreground">参数</span>
+          <code class="min-w-0 break-all rounded bg-muted/60 px-1.5 py-0.5 font-mono text-xs">
+            {{ message.toolCall?.args }}
+          </code>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="shrink-0 text-muted-foreground">结果</span>
+          <span class="min-w-0 break-words">{{ message.toolCall?.result || message.content }}</span>
+        </div>
+      </div>
     </ToolContent>
   </Tool>
 </template>
