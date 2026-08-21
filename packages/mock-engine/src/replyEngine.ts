@@ -101,6 +101,11 @@ export function buildMockReply(input: string, config: AgentConfig): MockReply {
     return { messages: [assistantMessage], trace }
   }
 
+  if (!knowledgeBaseEnabled(config) && input.includes('退款')) {
+    const assistantMessage = createMessage('assistant', '我没有接入知识库，无法回答退款问题')
+    return { messages: [assistantMessage], trace }
+  }
+
   const assistantMessage = input.includes('你是谁')
     ? createMessage('assistant', resolvePromptVariables(config.systemPrompt, config).slice(0, 40))
     : createMessage('assistant', resolvePromptVariables(config.firstMessage, config))
