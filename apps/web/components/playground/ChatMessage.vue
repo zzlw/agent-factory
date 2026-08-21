@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import type { Message, TraceStep } from '@agent-factory/agent-core'
-import { CheckIcon, ChevronRightIcon, CopyIcon, ListTreeIcon, WrenchIcon } from '@lucide/vue'
+import {
+  BotIcon,
+  CheckIcon,
+  ChevronRightIcon,
+  CopyIcon,
+  ListTreeIcon,
+  WrenchIcon,
+} from '@lucide/vue'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 const props = defineProps<{
   message: Message
@@ -24,8 +32,13 @@ async function copyMessage() {
     v-if="message.role !== 'tool'"
     :from="message.role === 'user' ? 'user' : 'assistant'"
   >
+    <Avatar v-if="message.role === 'assistant'" class="size-7 shrink-0">
+      <AvatarFallback class="bg-primary text-primary-foreground">
+        <BotIcon class="size-3.5" />
+      </AvatarFallback>
+    </Avatar>
     <div class="relative flex min-w-0 flex-col gap-2">
-      <MessageContent>
+      <MessageContent :class="message.role === 'user' ? 'ring-1 ring-border' : ''">
         <!-- 助手消息按 Markdown 渲染（mock 回复含列表/加粗等结构） -->
         <MessageResponse v-if="message.role === 'assistant'" :content="message.content" />
         <template v-else>{{ message.content }}</template>
