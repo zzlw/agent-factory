@@ -35,7 +35,7 @@ const columnHelper = createColumnHelper<AgentSnapshot>()
 const columns = [
   columnHelper.accessor('version', {
     header: '版本',
-    cell: (info) => h(Badge, { variant: 'default' }, `v${info.getValue()}`),
+    cell: (info) => h(Badge, { variant: 'default' }, { default: () => `v${info.getValue()}` }),
   }),
   columnHelper.accessor('changelog', {
     header: '发布说明',
@@ -62,7 +62,7 @@ const columns = [
             pendingRollback.value = snapshot
           },
         },
-        [h(RotateCcw, { class: 'size-4' }), '回滚到此版本'],
+        { default: () => [h(RotateCcw, { class: 'size-4' }), '回滚到此版本'] },
       )
     },
   }),

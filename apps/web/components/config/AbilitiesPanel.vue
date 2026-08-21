@@ -65,7 +65,7 @@ const columns = [
     cell: (info) => {
       const integration = info.getValue()
       if (integration === 'mcp') {
-        return h(Badge, { variant: 'outline' }, 'MCP')
+        return h(Badge, { variant: 'outline' }, { default: () => 'MCP' })
       }
       return integrationLabels[integration]
     },
