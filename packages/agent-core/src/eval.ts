@@ -9,11 +9,12 @@ export interface ScenarioResult {
 export function evaluateScenario(
   scenario: TestScenario,
   config: AgentConfig,
-  reply: Message,
+  messages: Message[],
   trace: TraceStep[],
 ): ScenarioResult {
   const reasons: string[] = []
   const assertion = scenario.assertion
+  const reply = messages.find((message) => message.role === 'assistant')
 
   if (assertion.requiresCapability) {
     const capability = config.capabilities.find(
@@ -27,7 +28,7 @@ export function evaluateScenario(
 
   if (assertion.mustCallTool) {
     const toolCalled =
-      reply.toolCall?.name === assertion.mustCallTool ||
+      messages.some((message) => message.toolCall?.name === assertion.mustCallTool) ||
       trace.some(
         (step) =>
           step.type === 'toolCall' &&
@@ -38,7 +39,7 @@ export function evaluateScenario(
     }
   }
 
-  if (assertion.replyContains && !reply.content.includes(assertion.replyContains)) {
+  if (assertion.replyContains && reply && !reply.content.includes(assertion.replyContains)) {
     reasons.push(`回复未包含关键词：${assertion.replyContains}`)
   }
 

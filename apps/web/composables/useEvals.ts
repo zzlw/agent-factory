@@ -24,9 +24,8 @@ export function useEvals() {
 
     for (const scenario of testScenarios) {
       const reply = buildMockReply(scenario.input, agentStore.config)
-      const assistant = reply.messages.find((message) => message.role === 'assistant')
-      const result = assistant
-        ? evaluateScenario(scenario, agentStore.config, assistant, reply.trace)
+      const result = reply.messages.some((message) => message.role === 'assistant')
+        ? evaluateScenario(scenario, agentStore.config, reply.messages, reply.trace)
         : {
             scenarioId: scenario.id,
             passed: false,
