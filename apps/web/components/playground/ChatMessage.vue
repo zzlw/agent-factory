@@ -23,9 +23,8 @@ async function copyMessage() {
   <Message
     v-if="message.role !== 'tool'"
     :from="message.role === 'user' ? 'user' : 'assistant'"
-    class="relative"
   >
-    <div class="flex min-w-0 flex-col gap-2">
+    <div class="relative flex min-w-0 flex-col gap-2">
       <MessageContent>
         <!-- 助手消息按 Markdown 渲染（mock 回复含列表/加粗等结构） -->
         <MessageResponse v-if="message.role === 'assistant'" :content="message.content" />
@@ -34,7 +33,7 @@ async function copyMessage() {
 
       <!-- 执行轨迹是调试性元信息：轻量行内折叠（对齐 LangSmith / Vercel AI chat 的 trace 展示），不占视觉重心 -->
       <details v-if="message.role === 'assistant' && trace && trace.length" class="group/details text-[13px] text-muted-foreground">
-        <summary class="inline-flex w-fit cursor-pointer select-none items-center gap-0.5 rounded px-1 py-0.5 -ml-1 hover:text-foreground [&::-webkit-details-marker]:hidden">
+        <summary class="inline-flex w-fit cursor-pointer select-none items-center gap-1 rounded px-1 py-0.5 -ml-1 hover:text-foreground [&::-webkit-details-marker]:hidden">
           <ChevronRightIcon class="size-3 transition-transform group-open/details:rotate-90" />
           执行轨迹（{{ trace.length }} 步）
         </summary>
@@ -47,7 +46,7 @@ async function copyMessage() {
 
       <MessageActions
         v-if="message.role === 'assistant'"
-        class="absolute top-0 right-0 opacity-0 transition-opacity group-hover:opacity-100"
+        class="absolute left-full top-0 ml-1 opacity-0 transition-opacity group-hover:opacity-100"
       >
         <MessageAction tooltip="复制" @click="copyMessage">
           <CheckIcon v-if="copied" class="size-4 text-green-600" />
@@ -60,7 +59,7 @@ async function copyMessage() {
   <!-- tool 消息：与 Trace 同款的轻量行内折叠，只在消息流里占一行 -->
   <details v-else class="group/tool text-[13px] text-muted-foreground">
     <summary
-      class="inline-flex w-fit cursor-pointer select-none items-center gap-1.5 rounded px-1 py-0.5 -ml-1 hover:text-foreground [&::-webkit-details-marker]:hidden"
+      class="inline-flex w-fit cursor-pointer select-none items-center gap-1 rounded px-1 py-0.5 -ml-1 hover:text-foreground [&::-webkit-details-marker]:hidden"
     >
       <ChevronRightIcon class="size-3 transition-transform group-open/tool:rotate-90" />
       <span class="font-medium text-foreground">
