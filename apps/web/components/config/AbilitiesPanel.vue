@@ -1,6 +1,17 @@
 <script setup lang="ts">
-import type { CapabilityType } from '@agent-factory/agent-core'
-import { BookOpen, Puzzle, Wrench } from 'lucide-vue-next'
+import type { Capability, CapabilityType } from '@agent-factory/agent-core'
+import {
+  createColumnHelper,
+  FlexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useVueTable,
+} from '@tanstack/vue-table'
+import { ArrowDown, ArrowUp, ArrowUpDown, BookOpen, Puzzle, Wrench } from 'lucide-vue-next'
+import { h } from 'vue'
+import { Switch } from '@/components/ui/switch'
 
 const agentStore = useAgentStore()
 
@@ -17,15 +28,66 @@ const typeIcons = {
 }
 
 const search = ref('')
+const capabilities = computed(() => agentStore.config.capabilities)
 
-const filteredCapabilities = computed(() => {
-  const keyword = search.value.trim().toLowerCase()
-  if (!keyword) {
-    return agentStore.config.capabilities
-  }
-  return agentStore.config.capabilities.filter((item) =>
-    `${item.name}${item.description}`.toLowerCase().includes(keyword),
-  )
+const columnHelper = createColumnHelper<Capability>()
+
+const columns = [
+  columnHelper.accessor('name', {
+    header: '名称',
+    cell: (info) => {
+      const capability = info.row.original
+      return h('div', { class: 'flex items-center gap-2' }, [
+        h('span', { class: 'flex size-7 items-center justify-center rounded-md bg-muted' }, [
+          h(typeIcons[capability.type], { class: 'size-4' }),
+        ]),
+        h('span', { class: 'text-sm font-medium' }, capability.name),
+      ])
+    },
+  }),
+  columnHelper.accessor('type', {
+    header: '类型',
+    cell: (info) => typeLabels[info.getValue()],
+  }),
+  columnHelper.accessor('description', {
+    header: '描述',
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor('integration', {
+    header: '接入',
+    cell: (info) => (info.getValue() === 'mcp' ? 'MCP' : info.getValue()),
+  }),
+  columnHelper.display({
+    id: 'enabled',
+    header: '启用',
+    cell: (info) =>
+      h(Switch, {
+        modelValue: info.row.original.enabled,
+        'onUpdate:modelValue': (enabled: boolean) =>
+          setCapabilityEnabled(info.row.original.id, enabled),
+        'aria-label': '启用开关',
+      }),
+  }),
+]
+
+const table = useVueTable({
+  get data() {
+    return capabilities.value
+  },
+  columns,
+  state: {
+    get globalFilter() {
+      return search.value
+    },
+  },
+  onGlobalFilterChange: (updater) => {
+    search.value = typeof updater === 'function' ? updater(search.value) : updater
+  },
+  getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+  getPaginationRowModel: getPaginationRowModel(),
+  initialState: { pagination: { pageSize: 5 } },
 })
 
 function setCapabilityEnabled(id: string, enabled: boolean) {
@@ -49,38 +111,83 @@ function setCapabilityEnabled(id: string, enabled: boolean) {
       <Input v-model="search" class="w-56" placeholder="搜索能力" />
     </div>
 
-    <div v-if="filteredCapabilities.length" class="grid gap-3">
-      <Card
-        v-for="capability in filteredCapabilities"
-        :key="capability.id"
-        class="py-4"
-      >
-        <CardContent class="flex items-start gap-4">
-          <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-            <component :is="typeIcons[capability.type]" class="size-5" />
-          </div>
-          <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="text-sm font-medium">{{ capability.name }}</span>
-              <Badge variant="secondary">{{ typeLabels[capability.type] }}</Badge>
-              <Badge v-if="capability.integration === 'mcp'" variant="outline">MCP</Badge>
-            </div>
-            <p class="mt-1 text-sm text-muted-foreground">{{ capability.description }}</p>
-          </div>
-          <Switch
-            :model-value="capability.enabled"
-            aria-label="启用开关"
-            @update:model-value="setCapabilityEnabled(capability.id, $event)"
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <Card class="py-4">
+      <CardContent>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b text-left text-muted-foreground">
+              <th
+                v-for="header in table.getHeaderGroups()[0]?.headers"
+                :key="header.id"
+                class="px-3 py-2 font-medium"
+              >
+                <button
+                  class="inline-flex items-center gap-1"
+                  :class="header.column.getCanSort() ? 'cursor-pointer' : 'cursor-default'"
+                  @click="header.column.getToggleSortingHandler()?.({})"
+                >
+                  <FlexRender
+                    :render="header.column.columnDef.header"
+                    :props="header.getContext()"
+                  />
+                  <ArrowUpDown
+                    v-if="header.column.getCanSort() && header.column.getIsSorted() === false"
+                    class="size-3"
+                  />
+                  <ArrowUp v-else-if="header.column.getIsSorted() === 'asc'" class="size-3" />
+                  <ArrowDown v-else-if="header.column.getIsSorted() === 'desc'" class="size-3" />
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="row in table.getRowModel().rows"
+              :key="row.id"
+              class="border-b last:border-b-0"
+            >
+              <td v-for="cell in row.getVisibleCells()" :key="cell.id" class="px-3 py-2">
+                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-    <Empty v-else>
-      <EmptyHeader>
-        <EmptyTitle>没有匹配的能力</EmptyTitle>
-        <EmptyDescription>尝试更换关键词，或清空搜索查看全部能力。</EmptyDescription>
-      </EmptyHeader>
-    </Empty>
+        <Empty v-if="table.getRowModel().rows.length === 0" class="py-10">
+          <EmptyHeader>
+            <EmptyTitle>没有匹配的能力</EmptyTitle>
+            <EmptyDescription>尝试更换关键词，或清空搜索查看全部能力。</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+
+        <div
+          v-if="table.getRowModel().rows.length > 0"
+          class="mt-3 flex items-center justify-between text-sm text-muted-foreground"
+        >
+          <span>共 {{ table.getFilteredRowModel().rows.length }} 项</span>
+          <div class="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              :disabled="!table.getCanPreviousPage()"
+              @click="table.previousPage()"
+            >
+              上一页
+            </Button>
+            <span>
+              第 {{ table.getState().pagination.pageIndex + 1 }} / {{ table.getPageCount() }} 页
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              :disabled="!table.getCanNextPage()"
+              @click="table.nextPage()"
+            >
+              下一页
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   </div>
 </template>
