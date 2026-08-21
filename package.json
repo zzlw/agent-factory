@@ -1,0 +1,16 @@
+{
+  "name": "agent-factory",
+  "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "dev": "pnpm --filter @agent-factory/web dev",
+    "build": "pnpm --filter @agent-factory/web build",
+    "typecheck": "pnpm -r typecheck",
+    "format": "biome format --write .",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.0"
+  }
+}
