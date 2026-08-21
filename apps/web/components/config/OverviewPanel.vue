@@ -19,12 +19,6 @@ const differences = computed(() =>
   agentStore.publishedConfig ? diffAgentConfig(agentStore.config, agentStore.publishedConfig) : [],
 )
 
-function statusText(status: string): string {
-  if (status === 'draft') return '草稿'
-  if (status === 'saved') return '已保存'
-  return '已发布'
-}
-
 function formatTime(iso: string | null): string {
   if (!iso) return '—'
   return new Intl.DateTimeFormat('zh-CN', {
@@ -39,14 +33,9 @@ function formatTime(iso: string | null): string {
 <template>
   <div class="grid gap-6">
     <section>
-      <div class="flex items-start justify-between gap-4">
-        <div class="min-w-0">
-          <h2 class="truncate text-xl font-semibold">{{ agentStore.config.name }}</h2>
-          <p class="mt-1 text-sm text-muted-foreground">{{ agentStore.config.description }}</p>
-        </div>
-        <Badge :variant="agentStore.status === 'draft' ? 'outline' : agentStore.status === 'saved' ? 'secondary' : 'default'">
-          {{ statusText(agentStore.status) }} · v{{ agentStore.version }}
-        </Badge>
+      <div class="min-w-0">
+        <h2 class="truncate text-xl font-semibold">{{ agentStore.config.name }}</h2>
+        <p class="mt-1 text-sm text-muted-foreground">{{ agentStore.config.description }}</p>
       </div>
     </section>
 
