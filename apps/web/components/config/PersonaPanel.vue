@@ -55,12 +55,24 @@ const systemPromptRef = ref<HTMLTextAreaElement | null>(null)
 const systemPromptChars = computed(() => values.systemPrompt.length)
 const systemPromptTokens = computed(() => Math.max(1, Math.ceil(systemPromptChars.value / 2)))
 
-function coerceUpdate(handler: (value: string) => void) {
-  return (value: string | number) => handler(String(value))
-}
-
 function applyPromptTemplate(value: string) {
   setFieldValue('systemPrompt', value)
+}
+
+function onNameInput(value: string | number) {
+  nameBinds.value['onUpdate:modelValue'](String(value))
+}
+
+function onDescriptionInput(value: string | number) {
+  descriptionBinds.value['onUpdate:modelValue'](String(value))
+}
+
+function onSystemPromptInput(value: string | number) {
+  systemPromptBinds.value['onUpdate:modelValue'](String(value))
+}
+
+function onFirstMessageInput(value: string | number) {
+  firstMessageBinds.value['onUpdate:modelValue'](String(value))
 }
 
 function insertPromptVariable(variable: string) {
@@ -130,7 +142,7 @@ watch(
           id="agent-name"
           :model-value="nameBinds.modelValue"
           aria-label="Agent 名称"
-          @update:model-value="coerceUpdate(nameBinds['onUpdate:modelValue'])"
+          @update:model-value="onNameInput"
           @blur="nameBinds.onBlur"
         />
         <p v-if="nameError" class="text-xs text-destructive">{{ nameError }}</p>
@@ -142,7 +154,7 @@ watch(
           id="agent-description"
           :model-value="descriptionBinds.modelValue"
           rows="3"
-          @update:model-value="coerceUpdate(descriptionBinds['onUpdate:modelValue'])"
+          @update:model-value="onDescriptionInput"
           @blur="descriptionBinds.onBlur"
         />
         <p v-if="descriptionError" class="text-xs text-destructive">{{ descriptionError }}</p>
@@ -186,7 +198,7 @@ watch(
           :model-value="systemPromptBinds.modelValue"
           rows="10"
           class="font-mono"
-          @update:model-value="coerceUpdate(systemPromptBinds['onUpdate:modelValue'])"
+          @update:model-value="onSystemPromptInput"
           @blur="systemPromptBinds.onBlur"
         />
         <p v-if="systemPromptError" class="text-xs text-destructive">{{ systemPromptError }}</p>
@@ -201,7 +213,7 @@ watch(
           id="first-message"
           :model-value="firstMessageBinds.modelValue"
           rows="5"
-          @update:model-value="coerceUpdate(firstMessageBinds['onUpdate:modelValue'])"
+          @update:model-value="onFirstMessageInput"
           @blur="firstMessageBinds.onBlur"
         />
         <p v-if="firstMessageError" class="text-xs text-destructive">{{ firstMessageError }}</p>
