@@ -45,11 +45,11 @@ async function copyMessage() {
       </div>
 
       <!-- 执行轨迹是调试性元信息：轻量行内折叠（对齐 LangSmith / Vercel AI chat 的 trace 展示），不占视觉重心 -->
-      <details v-if="message.role === 'assistant' && trace && trace.length" class="group/details text-[13px] text-muted-foreground">
+      <details v-if="message.role === 'assistant' && trace && trace.length" class="group/details text-xs text-muted-foreground">
         <summary class="inline-flex w-fit cursor-pointer select-none items-center gap-1.5 rounded px-1 py-0.5 -ml-1 hover:text-foreground [&::-webkit-details-marker]:hidden">
-          <ListTreeIcon class="size-3.5 text-muted-foreground" />
+          <ListTreeIcon class="size-3 text-muted-foreground" />
           <span>执行轨迹（{{ trace.length }} 步）</span>
-          <ChevronRightIcon class="size-3.5 transition-transform group-open/details:rotate-90" />
+          <ChevronRightIcon class="size-3 transition-transform group-open/details:rotate-90" />
         </summary>
         <ol class="mt-1 space-y-1 border-l pl-3">
           <li v-for="step in trace" :key="step.id">
@@ -62,15 +62,15 @@ async function copyMessage() {
   </Message>
 
   <!-- tool 消息：与 Trace 同款的轻量行内折叠，只在消息流里占一行 -->
-  <details v-else class="group/tool text-[13px] text-muted-foreground">
+  <details v-else class="group/tool text-xs text-muted-foreground">
     <summary
       class="inline-flex w-fit cursor-pointer select-none items-center gap-1.5 rounded px-1 py-0.5 -ml-1 hover:text-foreground [&::-webkit-details-marker]:hidden"
     >
-      <WrenchIcon class="size-3.5 text-muted-foreground" />
+      <WrenchIcon class="size-3 text-muted-foreground" />
       <span class="font-medium text-foreground">
         调用 {{ message.toolCall?.name ?? '工具' }}
       </span>
-      <ChevronRightIcon class="size-3.5 transition-transform group-open/tool:rotate-90" />
+      <ChevronRightIcon class="size-3 transition-transform group-open/tool:rotate-90" />
     </summary>
     <div class="mt-1.5 space-y-1 rounded-md bg-muted/40 px-2.5 py-2">
       <div>参数：<code class="font-mono text-xs">{{ message.toolCall?.args }}</code></div>
