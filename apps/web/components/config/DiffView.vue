@@ -14,7 +14,6 @@ const differences = computed(() => diffAgentConfig(props.current, props.previous
     <div v-for="diff in differences" :key="diff.key" class="rounded-md border p-3">
       <div class="mb-2 flex items-center justify-between gap-2">
         <span class="text-sm font-medium">{{ diff.label }}</span>
-        <Badge variant="outline">已修改</Badge>
       </div>
       <dl class="space-y-2 text-sm">
         <div>

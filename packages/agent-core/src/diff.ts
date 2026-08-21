@@ -1,11 +1,8 @@
 import type { AgentConfig } from './types'
 
-export type DiffKind = 'added' | 'removed' | 'modified'
-
 export interface ConfigFieldDiff {
   key: string
   label: string
-  kind: DiffKind
   current: string | null
   previous: string | null
 }
@@ -34,7 +31,6 @@ export function diffAgentConfig(current: AgentConfig, previous: AgentConfig): Co
       diffs.push({
         key: field.key,
         label: field.label,
-        kind: 'modified',
         current: currentValue,
         previous: previousValue,
       })
@@ -45,7 +41,6 @@ export function diffAgentConfig(current: AgentConfig, previous: AgentConfig): Co
     diffs.push({
       key: 'temperature',
       label: 'Temperature',
-      kind: 'modified',
       current: String(current.temperature),
       previous: String(previous.temperature),
     })
@@ -55,7 +50,6 @@ export function diffAgentConfig(current: AgentConfig, previous: AgentConfig): Co
     diffs.push({
       key: 'capabilities',
       label: '能力',
-      kind: 'modified',
       current: capabilitySummary(current),
       previous: capabilitySummary(previous),
     })
