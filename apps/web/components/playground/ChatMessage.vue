@@ -25,7 +25,7 @@ async function copyMessage() {
     :from="message.role === 'user' ? 'user' : 'assistant'"
   >
     <div class="flex min-w-0 flex-col gap-2">
-      <div class="flex items-end gap-1">
+      <div class="flex items-center gap-0.5">
         <MessageContent :class="message.role === 'user' ? 'ring-1 ring-border' : ''">
           <!-- 助手消息按 Markdown 渲染（mock 回复含列表/加粗等结构） -->
           <MessageResponse v-if="message.role === 'assistant'" :content="message.content" />
@@ -35,7 +35,7 @@ async function copyMessage() {
           v-if="message.role === 'assistant'"
           variant="ghost"
           size="icon"
-          class="size-6 shrink-0 p-0 text-muted-foreground"
+          class="size-4 shrink-0 p-0 text-muted-foreground"
           aria-label="复制"
           @click="copyMessage"
         >
