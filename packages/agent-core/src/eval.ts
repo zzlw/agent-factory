@@ -29,7 +29,9 @@ export function evaluateScenario(
     const toolCalled =
       reply.toolCall?.name === assertion.mustCallTool ||
       trace.some(
-        (step) => step.type === 'toolCall' && step.detail.includes(assertion.mustCallTool ?? ''),
+        (step) =>
+          step.type === 'toolCall' &&
+          `${step.title}${step.detail}`.includes(assertion.mustCallTool ?? ''),
       )
     if (!toolCalled) {
       reasons.push(`未调用工具：${assertion.mustCallTool}`)

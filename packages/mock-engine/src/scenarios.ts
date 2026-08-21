@@ -9,7 +9,7 @@ export const testScenarios: TestScenario[] = [
     assertion: {
       requiresCapability: '天气查询',
       mustCallTool: '天气查询',
-      replyContains: '天气',
+      replyContains: '22°C',
     },
   },
   {
