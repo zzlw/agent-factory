@@ -5,3 +5,9 @@ packages:
 allowBuilds:
   esbuild: true
   vue-demi: true
+
+# pnpm 11 重解析时会把 esbuild 0.28.x 的平台可选依赖从锁文件丢掉，导致构建报
+# "Host version 0.28.2 does not match binary version 0.27.7"。固定到 0.27.7（fontless 已锁该版本）
+# 可让 esbuild 只存在一份，且其平台依赖完整保留。
+overrides:
+  esbuild: 0.27.7
