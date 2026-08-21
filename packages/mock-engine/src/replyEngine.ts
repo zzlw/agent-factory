@@ -61,7 +61,6 @@ export function buildMockReply(input: string, config: AgentConfig): MockReply {
       result: rawResult,
     })
     const assistantMessage = createMessage('assistant', '北京今天晴，22°C。')
-    trace.push(createTraceStep(assistantMessage.id, 'toolCall', '调用天气查询', '{"city":"北京"}'))
     return { messages: [toolMessage, assistantMessage], trace }
   }
 
