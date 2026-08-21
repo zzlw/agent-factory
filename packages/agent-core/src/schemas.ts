@@ -12,7 +12,7 @@ export const capabilitySchema = z.object({
 })
 
 export const agentConfigSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, '名称不能为空'),
   description: z.string(),
   systemPrompt: z.string(),
   firstMessage: z.string(),
@@ -23,6 +23,13 @@ export const agentConfigSchema = z.object({
     enabled: z.boolean(),
   }),
   capabilities: z.array(capabilitySchema),
+})
+
+export const personaFormSchema = agentConfigSchema.pick({
+  name: true,
+  description: true,
+  systemPrompt: true,
+  firstMessage: true,
 })
 
 export type AgentConfigValidation = { ok: true } | { ok: false; message: string }
