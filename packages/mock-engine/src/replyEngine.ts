@@ -54,10 +54,11 @@ export function buildMockReply(input: string, config: AgentConfig): MockReply {
   const trace: TraceStep[] = []
 
   if (weatherToolEnabled(config) && input.includes('天气')) {
-    const toolMessage = createMessage('tool', '北京今天晴，22°C', {
+    const rawResult = '{"city":"北京","condition":"晴","temperature":22}'
+    const toolMessage = createMessage('tool', rawResult, {
       name: '天气查询',
       args: '{"city":"北京"}',
-      result: '北京今天晴，22°C',
+      result: rawResult,
     })
     const assistantMessage = createMessage('assistant', '北京今天晴，22°C。')
     trace.push(createTraceStep(assistantMessage.id, 'input', '用户输入', input))

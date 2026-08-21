@@ -66,7 +66,6 @@ async function copyMessage() {
       <span class="font-medium text-foreground">
         调用 {{ message.toolCall?.name ?? '工具' }}
       </span>
-      <span class="truncate">{{ message.toolCall?.result || message.content }}</span>
     </summary>
     <div class="mt-1.5 space-y-1 rounded-md bg-muted/40 px-2.5 py-2">
       <div>参数：<code class="font-mono text-xs">{{ message.toolCall?.args }}</code></div>
