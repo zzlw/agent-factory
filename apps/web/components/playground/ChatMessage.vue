@@ -24,12 +24,25 @@ async function copyMessage() {
     v-if="message.role !== 'tool'"
     :from="message.role === 'user' ? 'user' : 'assistant'"
   >
-    <div class="relative flex min-w-0 flex-col gap-2">
-      <MessageContent :class="message.role === 'user' ? 'ring-1 ring-border' : ''">
-        <!-- 助手消息按 Markdown 渲染（mock 回复含列表/加粗等结构） -->
-        <MessageResponse v-if="message.role === 'assistant'" :content="message.content" />
-        <template v-else>{{ message.content }}</template>
-      </MessageContent>
+    <div class="flex min-w-0 flex-col gap-2">
+      <div class="flex items-center gap-1">
+        <MessageContent :class="message.role === 'user' ? 'ring-1 ring-border' : ''">
+          <!-- 助手消息按 Markdown 渲染（mock 回复含列表/加粗等结构） -->
+          <MessageResponse v-if="message.role === 'assistant'" :content="message.content" />
+          <template v-else>{{ message.content }}</template>
+        </MessageContent>
+        <Button
+          v-if="message.role === 'assistant'"
+          variant="ghost"
+          size="icon"
+          class="size-6 shrink-0 p-0 text-muted-foreground"
+          aria-label="复制"
+          @click="copyMessage"
+        >
+          <CheckIcon v-if="copied" class="size-3 text-green-600" />
+          <CopyIcon v-else class="size-3" />
+        </Button>
+      </div>
 
       <!-- 执行轨迹是调试性元信息：轻量行内折叠（对齐 LangSmith / Vercel AI chat 的 trace 展示），不占视觉重心 -->
       <details v-if="message.role === 'assistant' && trace && trace.length" class="group/details text-[13px] text-muted-foreground">
@@ -45,15 +58,6 @@ async function copyMessage() {
         </ol>
       </details>
 
-      <MessageActions
-        v-if="message.role === 'assistant'"
-        class="absolute left-full top-0 ml-1 opacity-0 transition-opacity group-hover:opacity-100"
-      >
-        <MessageAction tooltip="复制" @click="copyMessage">
-          <CheckIcon v-if="copied" class="size-4 text-green-600" />
-          <CopyIcon v-else class="size-4" />
-        </MessageAction>
-      </MessageActions>
     </div>
   </Message>
 
