@@ -3,7 +3,8 @@ export default defineEventHandler(async (event) => {
   if (consumeMockFail()) {
     throw createError({
       statusCode: 500,
-      statusMessage: '模拟保存失败',
+      statusMessage: 'Internal Server Error',
+      message: '模拟保存失败',
     })
   }
   return { ok: true }
