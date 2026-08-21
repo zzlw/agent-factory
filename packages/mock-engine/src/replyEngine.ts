@@ -61,14 +61,12 @@ export function buildMockReply(input: string, config: AgentConfig): MockReply {
       result: rawResult,
     })
     const assistantMessage = createMessage('assistant', '北京今天晴，22°C。')
-    trace.push(createTraceStep(assistantMessage.id, 'input', '用户输入', input))
     trace.push(createTraceStep(assistantMessage.id, 'toolCall', '调用天气查询', '{"city":"北京"}'))
     return { messages: [toolMessage, assistantMessage], trace }
   }
 
   if (!weatherToolEnabled(config) && input.includes('天气')) {
     const assistantMessage = createMessage('assistant', '我没有天气查询能力')
-    trace.push(createTraceStep(assistantMessage.id, 'input', '用户输入', input))
     return { messages: [assistantMessage], trace }
   }
 
@@ -77,7 +75,6 @@ export function buildMockReply(input: string, config: AgentConfig): MockReply {
       'assistant',
       '已检索知识库：退款政策支持 7 天内无理由退款。',
     )
-    trace.push(createTraceStep(assistantMessage.id, 'input', '用户输入', input))
     trace.push(
       createTraceStep(
         assistantMessage.id,
@@ -93,6 +90,5 @@ export function buildMockReply(input: string, config: AgentConfig): MockReply {
     ? createMessage('assistant', config.systemPrompt.slice(0, 40))
     : createMessage('assistant', config.firstMessage)
 
-  trace.push(createTraceStep(assistantMessage.id, 'input', '用户输入', input))
   return { messages: [assistantMessage], trace }
 }
