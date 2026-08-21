@@ -15,9 +15,7 @@ const props = withDefaults(defineProps<SuggestionProps>(), {
   size: 'sm',
 })
 
-const emit = defineEmits<{
-  (e: 'click', suggestion: string): void
-}>()
+const emit = defineEmits<(e: 'click', suggestion: string) => void>()
 
 function handleClick() {
   emit('click', props.suggestion)

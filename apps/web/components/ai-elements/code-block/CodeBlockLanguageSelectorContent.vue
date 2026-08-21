@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SelectContent } from '@/components/ui/select'
+import type { SelectContent } from '@/components/ui/select'
 
 type CodeBlockLanguageSelectorContentProps = InstanceType<typeof SelectContent>['$props']
 

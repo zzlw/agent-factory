@@ -9,16 +9,13 @@ const props = defineProps<{
 }>()
 
 const content = computed(() => {
-  if (!props.errors || props.errors.length === 0)
-    return null
+  if (!props.errors || props.errors.length === 0) return null
 
   if (props.errors.length === 1 && props.errors[0]?.message) {
     return props.errors[0].message
   }
 
-  return props.errors.some(e => e?.message)
-    ? props.errors
-    : null
+  return props.errors.some((e) => e?.message) ? props.errors : null
 })
 </script>
 

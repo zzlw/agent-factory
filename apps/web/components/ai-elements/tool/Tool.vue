@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
-import { Collapsible } from '@/components/ui/collapsible'
+import type { Collapsible } from '@/components/ui/collapsible'
 import { cn } from '@/lib/utils'
 
 type ToolProps = InstanceType<typeof Collapsible>['$props']

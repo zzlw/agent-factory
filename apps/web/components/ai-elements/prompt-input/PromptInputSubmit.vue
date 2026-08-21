@@ -1,11 +1,12 @@
 <script setup lang="ts">
 // import type { InputGroupButtonVariants } from '@/components/ui/input-group'
+
+import { CornerDownLeftIcon, Loader2Icon, SquareIcon, XIcon } from '@lucide/vue'
 import type { ChatStatus } from 'ai'
 import type { HTMLAttributes } from 'vue'
-import { CornerDownLeftIcon, Loader2Icon, SquareIcon, XIcon } from '@lucide/vue'
-import { InputGroupButton } from '@/components/ui/input-group'
-import { cn } from '@/lib/utils'
 import { computed } from 'vue'
+import type { InputGroupButton } from '@/components/ui/input-group'
+import { cn } from '@/lib/utils'
 
 type InputGroupButtonProps = InstanceType<typeof InputGroupButton>['$props']
 
@@ -24,11 +25,9 @@ const props = withDefaults(defineProps<Props>(), {
 const icon = computed(() => {
   if (props.status === 'submitted') {
     return Loader2Icon
-  }
-  else if (props.status === 'streaming') {
+  } else if (props.status === 'streaming') {
     return SquareIcon
-  }
-  else if (props.status === 'error') {
+  } else if (props.status === 'error') {
     return XIcon
   }
   return CornerDownLeftIcon

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { DynamicToolUIPart, ToolUIPart } from 'ai'
 import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
 import { computed, isVNode } from 'vue'
+import { cn } from '@/lib/utils'
 import { CodeBlock } from '../code-block'
 
 export type ToolPart = ToolUIPart | DynamicToolUIPart
@@ -17,9 +17,7 @@ const props = defineProps<Props>()
 
 const showOutput = computed(() => props.output || props.errorText)
 
-const isObjectOutput = computed(
-  () => typeof props.output === 'object' && !isVNode(props.output),
-)
+const isObjectOutput = computed(() => typeof props.output === 'object' && !isVNode(props.output))
 const isStringOutput = computed(() => typeof props.output === 'string')
 
 const formattedOutput = computed(() => {

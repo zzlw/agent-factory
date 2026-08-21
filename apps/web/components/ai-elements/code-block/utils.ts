@@ -32,7 +32,9 @@ function getTokensCacheKey(code: string, language: BundledLanguage) {
   return `${language}:${code.length}:${start}:${end}`
 }
 
-function getHighlighter(language: BundledLanguage): Promise<HighlighterGeneric<BundledLanguage, BundledTheme>> {
+function getHighlighter(
+  language: BundledLanguage,
+): Promise<HighlighterGeneric<BundledLanguage, BundledTheme>> {
   const cached = highlighterCache.get(language)
   if (cached) {
     return cached
@@ -50,7 +52,7 @@ function getHighlighter(language: BundledLanguage): Promise<HighlighterGeneric<B
 // Create raw tokens for immediate display while highlighting loads
 export function createRawTokens(code: string): TokenizedCode {
   return {
-    tokens: code.split('\n').map(line =>
+    tokens: code.split('\n').map((line) =>
       line === ''
         ? []
         : [

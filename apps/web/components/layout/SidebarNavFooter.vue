@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useSidebar } from '@/components/ui/sidebar'
 import { Bell, ChevronsUpDown, LogOut, Settings } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
+import { useSidebar } from '@/components/ui/sidebar'
 
 defineProps<{
   user: {

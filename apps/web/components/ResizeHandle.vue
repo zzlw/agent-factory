@@ -7,18 +7,19 @@ import { cn } from '@/lib/utils'
  * hover 时分界线染主色高亮（带过渡动画），active 常亮（拖拽中）。
  * mode：resize = 可拖拽（resizeStart 事件）；toggle = 点击切换（click 透传）。
  */
-const props = withDefaults(defineProps<{
-  mode?: 'resize' | 'toggle'
-  active?: boolean
-  class?: HTMLAttributes['class']
-}>(), {
-  mode: 'toggle',
-  active: false,
-})
+const props = withDefaults(
+  defineProps<{
+    mode?: 'resize' | 'toggle'
+    active?: boolean
+    class?: HTMLAttributes['class']
+  }>(),
+  {
+    mode: 'toggle',
+    active: false,
+  },
+)
 
-const emit = defineEmits<{
-  (e: 'resizeStart', event: PointerEvent): void
-}>()
+const emit = defineEmits<(e: 'resizeStart', event: PointerEvent) => void>()
 
 function onPointerDown(e: PointerEvent) {
   if (props.mode === 'resize') {

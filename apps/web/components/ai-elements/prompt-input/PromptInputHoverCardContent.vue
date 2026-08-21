@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HoverCardContent } from '@/components/ui/hover-card'
+import type { HoverCardContent } from '@/components/ui/hover-card'
 
 type PromptInputHoverCardContentProps = InstanceType<typeof HoverCardContent>['$props']
 

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
 import { CheckIcon, CopyIcon } from '@lucide/vue'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 import { reactiveOmit } from '@vueuse/core'
+import type { HTMLAttributes } from 'vue'
 import { computed, onBeforeUnmount, ref } from 'vue'
+import type { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { useCodeBlockContext } from './context'
 
 type CodeBlockCopyButtonProps = InstanceType<typeof Button>['$props']
@@ -14,12 +14,9 @@ interface Props extends /* @vue-ignore */ CodeBlockCopyButtonProps {
   class?: HTMLAttributes['class']
 }
 
-const props = withDefaults(
-  defineProps<Props>(),
-  {
-    timeout: 2000,
-  },
-)
+const props = withDefaults(defineProps<Props>(), {
+  timeout: 2000,
+})
 
 const emit = defineEmits<{
   (event: 'copy'): void
@@ -54,8 +51,7 @@ async function copyToClipboard() {
     resetTimer = setTimeout(() => {
       isCopied.value = false
     }, props.timeout)
-  }
-  catch (error) {
+  } catch (error) {
     emit('error', error instanceof Error ? error : new Error('Copy failed'))
   }
 }

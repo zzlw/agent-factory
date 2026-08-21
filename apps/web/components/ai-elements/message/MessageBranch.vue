@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { HTMLAttributes, VNode } from 'vue'
-import type { MessageBranchContextType } from './context'
-import { cn } from '@/lib/utils'
 import { provide, readonly, ref } from 'vue'
+import { cn } from '@/lib/utils'
+import type { MessageBranchContextType } from './context'
 import { MessageBranchKey } from './context'
 
 interface Props {
@@ -13,9 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
   defaultBranch: 0,
 })
 
-const emits = defineEmits<{
-  (e: 'branchChange', branchIndex: number): void
-}>()
+const emits = defineEmits<(e: 'branchChange', branchIndex: number) => void>()
 
 const currentBranch = ref<number>(props.defaultBranch)
 const branches = ref<VNode[]>([])
@@ -27,15 +25,13 @@ function handleBranchChange(index: number) {
 }
 
 function goToPrevious() {
-  if (totalBranches.value === 0)
-    return
+  if (totalBranches.value === 0) return
   const next = currentBranch.value > 0 ? currentBranch.value - 1 : totalBranches.value - 1
   handleBranchChange(next)
 }
 
 function goToNext() {
-  if (totalBranches.value === 0)
-    return
+  if (totalBranches.value === 0) return
   const next = currentBranch.value < totalBranches.value - 1 ? currentBranch.value + 1 : 0
   handleBranchChange(next)
 }

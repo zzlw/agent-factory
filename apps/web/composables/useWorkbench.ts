@@ -32,7 +32,9 @@ export function useWorkbench() {
   const activeSection = computed<string>({
     get: () => {
       const section = String(route.params.section ?? '')
-      return SECTION_IDS.includes(section as typeof SECTION_IDS[number]) ? section : DEFAULT_SECTION
+      return SECTION_IDS.includes(section as (typeof SECTION_IDS)[number])
+        ? section
+        : DEFAULT_SECTION
     },
     set: (id) => {
       // 分区是页面语义：push（可后退）；query 视图状态随行保留
@@ -59,7 +61,7 @@ export function useWorkbench() {
   })
 
   const activeSectionLabel = computed(
-    () => sections.find(section => section.id === activeSection.value)?.label ?? '',
+    () => sections.find((section) => section.id === activeSection.value)?.label ?? '',
   )
 
   return { activeSection, activeSectionLabel, sections, playgroundOpen, sidebarOpen }

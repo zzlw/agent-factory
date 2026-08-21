@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import type { ComboboxContentEmits, ComboboxContentProps } from 'reka-ui'
-import type { HTMLAttributes } from 'vue'
 import { reactiveOmit } from '@vueuse/core'
+import type { ComboboxContentEmits, ComboboxContentProps } from 'reka-ui'
 import { ComboboxContent, ComboboxPortal, useForwardPropsEmits } from 'reka-ui'
+import type { HTMLAttributes } from 'vue'
 import { cn } from '@/lib/utils'
 
-const props = withDefaults(defineProps<ComboboxContentProps & { class?: HTMLAttributes['class'] }>(), {
-  position: 'popper',
-  align: 'center',
-  sideOffset: 4,
-})
+const props = withDefaults(
+  defineProps<ComboboxContentProps & { class?: HTMLAttributes['class'] }>(),
+  {
+    position: 'popper',
+    align: 'center',
+    sideOffset: 4,
+  },
+)
 const emits = defineEmits<ComboboxContentEmits>()
 
 const delegatedProps = reactiveOmit(props, 'class')

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { BundledLanguage, ThemedToken } from 'shiki'
-import type { TokenizedCode } from './utils'
-import { cn } from '@/lib/utils'
 import { computed, ref, watch } from 'vue'
+import { cn } from '@/lib/utils'
+import type { TokenizedCode } from './utils'
 import { createRawTokens, highlightCode, isBold, isItalic, isUnderline } from './utils'
 
 const props = withDefaults(

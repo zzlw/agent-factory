@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SelectItem } from '@/components/ui/select'
+import type { SelectItem } from '@/components/ui/select'
 
 type CodeBlockLanguageSelectorItemProps = InstanceType<typeof SelectItem>['$props']
 
