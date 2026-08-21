@@ -4,6 +4,7 @@ import {
   deriveStatus,
   hasUnpublishedChanges,
   hasUnsavedChanges,
+  validateAgentConfig,
 } from '@agent-factory/agent-core'
 import {
   initialAgentConfig,
@@ -15,6 +16,19 @@ import { toRaw } from 'vue'
 
 function clone<T>(value: T): T {
   return structuredClone(toRaw(value))
+}
+
+function errorMessage(error: unknown, fallback: string): string {
+  if (typeof error === 'object' && error !== null && 'data' in error) {
+    const data = (error as { data?: unknown }).data
+    if (typeof data === 'object' && data !== null && 'message' in data) {
+      const message = (data as { message?: unknown }).message
+      if (typeof message === 'string' && message.trim()) {
+        return message
+      }
+    }
+  }
+  return fallback
 }
 
 export const useAgentStore = defineStore('agent', {
@@ -43,6 +57,11 @@ export const useAgentStore = defineStore('agent', {
       this.config = { ...this.config, ...patch }
     },
     async saveAgent() {
+      const validation = validateAgentConfig(this.config)
+      if (!validation.ok) {
+        this.error = validation.message
+        return
+      }
       this.saving = true
       this.error = null
       try {
@@ -52,17 +71,22 @@ export const useAgentStore = defineStore('agent', {
         })
         this.savedConfig = clone(this.config)
         this.lastSavedAt = new Date().toISOString()
-      } catch {
-        this.error = '保存失败，请重试'
+      } catch (error) {
+        this.error = errorMessage(error, '保存失败，请重试')
       } finally {
         this.saving = false
       }
     },
     async publishAgent(changelog?: string) {
+      const nextConfig = clone(this.config)
+      const validation = validateAgentConfig(nextConfig)
+      if (!validation.ok) {
+        this.error = validation.message
+        return
+      }
       this.publishing = true
       this.error = null
       try {
-        const nextConfig = clone(this.config)
         await $fetch('/api/agent/publish' as string & {}, {
           method: 'POST',
           body: { config: nextConfig, changelog },
@@ -80,8 +104,8 @@ export const useAgentStore = defineStore('agent', {
           version: this.version,
           changelog,
         })
-      } catch {
-        this.error = '发布失败，请重试'
+      } catch (error) {
+        this.error = errorMessage(error, '发布失败，请重试')
       } finally {
         this.publishing = false
       }

@@ -24,3 +24,16 @@ export const agentConfigSchema = z.object({
   }),
   capabilities: z.array(capabilitySchema),
 })
+
+export type AgentConfigValidation = { ok: true } | { ok: false; message: string }
+
+export function validateAgentConfig(config: unknown): AgentConfigValidation {
+  const result = agentConfigSchema.safeParse(config)
+  if (result.success) {
+    return { ok: true }
+  }
+  const message = result.error.issues
+    .map((issue) => `${issue.path.join('.') || 'config'}: ${issue.message}`)
+    .join('；')
+  return { ok: false, message }
+}
