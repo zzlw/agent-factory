@@ -10,6 +10,9 @@ export const MODEL_OPTIONS = [
 
 export const VOICE_OPTIONS = ['Alloy', 'Shimmer', 'Echo', 'Fable', 'Onyx'] as const
 
+export const MOCK_USER_NAME = '演示用户'
+export const MOCK_COMPANY = '演示公司'
+
 const v1Config: AgentConfig = {
   name: '客服助手',
   description: '处理常见问题的智能助手',

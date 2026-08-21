@@ -1,5 +1,6 @@
 import type { AgentConfig, Message, TraceStep } from '@agent-factory/agent-core'
 import { nanoid } from 'nanoid'
+import { MOCK_COMPANY, MOCK_USER_NAME } from './data'
 
 export interface MockReply {
   messages: Message[]
@@ -50,6 +51,21 @@ function knowledgeBaseEnabled(config: AgentConfig): boolean {
   )
 }
 
+function enabledKnowledgeBaseSummary(config: AgentConfig): string {
+  const items = config.capabilities.filter((item) => item.type === 'knowledgeBase' && item.enabled)
+  if (items.length === 0) {
+    return '未接入知识库'
+  }
+  return items.map((item) => item.name).join('、')
+}
+
+function resolvePromptVariables(text: string, config: AgentConfig): string {
+  return text
+    .replaceAll('{user_name}', MOCK_USER_NAME)
+    .replaceAll('{company}', MOCK_COMPANY)
+    .replaceAll('{knowledge_base}', enabledKnowledgeBaseSummary(config))
+}
+
 export function buildMockReply(input: string, config: AgentConfig): MockReply {
   const trace: TraceStep[] = []
 
@@ -86,8 +102,8 @@ export function buildMockReply(input: string, config: AgentConfig): MockReply {
   }
 
   const assistantMessage = input.includes('你是谁')
-    ? createMessage('assistant', config.systemPrompt.slice(0, 40))
-    : createMessage('assistant', config.firstMessage)
+    ? createMessage('assistant', resolvePromptVariables(config.systemPrompt, config).slice(0, 40))
+    : createMessage('assistant', resolvePromptVariables(config.firstMessage, config))
 
   return { messages: [assistantMessage], trace }
 }
