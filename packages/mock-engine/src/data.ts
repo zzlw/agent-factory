@@ -1,5 +1,15 @@
 import type { AgentConfig, AgentSnapshot } from '@agent-factory/agent-core'
 
+export const MODEL_OPTIONS = [
+  'gpt-4.1-mini',
+  'gpt-4.1',
+  'gpt-4o-mini',
+  'claude-4.5-sonnet',
+  'gemini-2.5-flash',
+] as const
+
+export const VOICE_OPTIONS = ['Alloy', 'Shimmer', 'Echo', 'Fable', 'Onyx'] as const
+
 const v1Config: AgentConfig = {
   name: '客服助手',
   description: '处理常见问题的智能助手',

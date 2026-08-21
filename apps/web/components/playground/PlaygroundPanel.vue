@@ -1,15 +1,30 @@
 <script setup lang="ts">
+import { testScenarios } from '@agent-factory/mock-engine'
+import { PanelRightClose, PanelRightOpen, RotateCcw, Square } from 'lucide-vue-next'
 import type { PromptInputMessage } from '~/components/ai-elements/prompt-input/types'
-import { PanelRightClose, PanelRightOpen, RotateCcw } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
 const { playgroundOpen } = useWorkbench()
-const { messages, traceByMessage, sending, configChanged, sendMessage, resetSession } = useMockChat()
+const {
+  messages,
+  traceByMessage,
+  sending,
+  streaming,
+  configChanged,
+  sendMessage,
+  resetSession,
+  stopStream,
+} = useMockChat()
+const { results, running, completed, runAll } = useEvals()
 
 // PromptInput 的 submit 回调：输入清空/失败恢复由组件内部管理
 async function handleSubmit({ text }: PromptInputMessage) {
   await sendMessage(text)
+}
+
+function runScenario(input: string) {
+  void sendMessage(input)
 }
 
 // Playground 宽度与抽屉开合同一真源（URL query ?pw=）：刷新/分享/前进后退均恢复，
@@ -123,6 +138,34 @@ function onResizeStart(e: PointerEvent) {
         </div>
         <ConfigSummary />
         <p v-if="configChanged" class="mt-2 text-xs text-destructive">配置已变更，建议重置会话</p>
+        <div class="mt-3 space-y-2">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              class="h-7 px-2 text-xs"
+              :disabled="running || sending"
+              @click="runAll"
+            >
+              运行全部场景
+            </Button>
+            <Badge v-if="completed" variant="outline">
+              {{ results.filter((item) => item.passed).length }}/{{ results.length }} 通过
+            </Badge>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <Button
+              v-for="scenario in testScenarios"
+              :key="scenario.id"
+              variant="ghost"
+              size="sm"
+              class="h-7 px-2 text-xs"
+              @click="runScenario(scenario.input)"
+            >
+              {{ scenario.label }}
+            </Button>
+          </div>
+        </div>
       </div>
 
       <!-- 消息流：StickToBottom 自动吸底；absolute inset-0 使高度只取决于定位祖先，不参与 flex 内容高度计算，彻底阻断“消息撑开面板”的整页滚动路径 -->
@@ -135,9 +178,19 @@ function onResizeStart(e: PointerEvent) {
               :message="message"
               :trace="traceByMessage[message.id]"
             />
-            <div v-if="sending" class="flex items-center gap-2 text-[13px] text-muted-foreground">
+            <div v-if="sending || streaming" class="flex items-center gap-2 text-[13px] text-muted-foreground">
               <Loader :size="14" />
               正在生成...
+              <Button
+                v-if="streaming"
+                variant="ghost"
+                size="icon"
+                class="size-6"
+                title="停止生成"
+                @click="stopStream"
+              >
+                <Square class="size-3.5" />
+              </Button>
             </div>
           </ConversationContent>
           <ConversationScrollButton />
@@ -151,7 +204,7 @@ function onResizeStart(e: PointerEvent) {
           <PromptInputTextarea placeholder="输入消息测试当前配置" />
           <PromptInputFooter>
             <span class="text-[13px] text-muted-foreground">Enter 发送 · Shift+Enter 换行</span>
-            <PromptInputSubmit :disabled="sending" />
+            <PromptInputSubmit :disabled="sending || streaming" />
           </PromptInputFooter>
         </PromptInput>
       </div>

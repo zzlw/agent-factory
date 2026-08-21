@@ -1,4 +1,4 @@
-import type { AgentConfig, Message, ScenarioAssertion, TestScenario, TraceStep } from './types'
+import type { AgentConfig, Message, TestScenario, TraceStep } from './types'
 
 export interface ScenarioResult {
   scenarioId: string
@@ -16,7 +16,9 @@ export function evaluateScenario(
   const assertion = scenario.assertion
 
   if (assertion.requiresCapability) {
-    const capability = config.capabilities.find((item) => item.name === assertion.requiresCapability)
+    const capability = config.capabilities.find(
+      (item) => item.name === assertion.requiresCapability,
+    )
     const enabled = capability?.enabled === true
     if (!enabled) {
       reasons.push(`缺少已启用能力：${assertion.requiresCapability}`)

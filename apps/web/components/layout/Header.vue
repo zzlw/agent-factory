@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { toast } from 'vue-sonner'
+
 const agentStore = useAgentStore()
 const { activeSectionLabel } = useWorkbench()
 
@@ -15,8 +17,36 @@ const statusVariant = computed(() => {
 })
 
 // 发布按钮文案即状态指示器（Dify 惯例）：有未发布变更时切换为“发布更新”
-const publishLabel = computed(() =>
-  agentStore.hasUnpublishedChanges ? '发布更新' : '发布',
+const publishLabel = computed(() => (agentStore.hasUnpublishedChanges ? '发布更新' : '发布'))
+
+const publishOpen = ref(false)
+const changelog = ref('')
+
+async function confirmPublish() {
+  await agentStore.publishAgent(changelog.value.trim() || undefined)
+  if (!agentStore.error) {
+    changelog.value = ''
+    publishOpen.value = false
+  }
+}
+
+async function armFailure() {
+  await $fetch('/api/agent/fail' as string & {}, {
+    method: 'POST',
+    body: { enabled: true },
+  })
+  toast.info('已武装失败演示', {
+    description: '下一次保存或发布将返回 500',
+  })
+}
+
+watch(
+  () => agentStore.error,
+  (message) => {
+    if (message) {
+      toast.error(message)
+    }
+  },
 )
 </script>
 
@@ -53,9 +83,39 @@ const publishLabel = computed(() =>
       >
         {{ agentStore.saving ? '保存中' : '保存' }}
       </Button>
-      <Button size="sm" :disabled="agentStore.publishing" @click="agentStore.publishAgent()">
-        {{ agentStore.publishing ? '发布中' : publishLabel }}
+      <Button variant="ghost" size="sm" title="模拟下一次保存/发布失败" @click="armFailure">
+        失败演示
       </Button>
+      <Dialog v-model:open="publishOpen">
+        <DialogTrigger as-child>
+          <Button size="sm" :disabled="agentStore.publishing">
+            {{ agentStore.publishing ? '发布中' : publishLabel }}
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>发布当前配置</DialogTitle>
+            <DialogDescription>
+              将保存并发布当前配置，生成新版本 v{{ agentStore.version + 1 }}。
+            </DialogDescription>
+          </DialogHeader>
+          <div class="grid gap-2">
+            <Label for="publish-changelog">发布说明（可选）</Label>
+            <Textarea
+              id="publish-changelog"
+              v-model="changelog"
+              placeholder="例如：启用天气查询能力"
+              rows="3"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" @click="publishOpen = false">取消</Button>
+            <Button :disabled="agentStore.publishing" @click="confirmPublish">
+              {{ agentStore.publishing ? '发布中' : '确认发布' }}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   </header>
 </template>

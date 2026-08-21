@@ -1,6 +1,5 @@
-import { nanoid } from 'nanoid'
-
 import type { AgentConfig, Message, TraceStep } from '@agent-factory/agent-core'
+import { nanoid } from 'nanoid'
 
 export interface MockReply {
   messages: Message[]
@@ -40,7 +39,9 @@ function createTraceStep(
 }
 
 function weatherToolEnabled(config: AgentConfig): boolean {
-  return config.capabilities.some((item) => item.type === 'tool' && item.name === '天气查询' && item.enabled)
+  return config.capabilities.some(
+    (item) => item.type === 'tool' && item.name === '天气查询' && item.enabled,
+  )
 }
 
 function knowledgeBaseEnabled(config: AgentConfig): boolean {
@@ -60,18 +61,20 @@ export function buildMockReply(input: string, config: AgentConfig): MockReply {
     })
     const assistantMessage = createMessage('assistant', '北京今天晴，22°C。')
     trace.push(createTraceStep(assistantMessage.id, 'input', '用户输入', input))
-    trace.push(
-      createTraceStep(assistantMessage.id, 'toolCall', '调用天气查询', '{"city":"北京"}'),
-    )
+    trace.push(createTraceStep(assistantMessage.id, 'toolCall', '调用天气查询', '{"city":"北京"}'))
     trace.push(createTraceStep(assistantMessage.id, 'modelOutput', '模型输出', '北京今天晴，22°C'))
-    trace.push(createTraceStep(assistantMessage.id, 'finalOutput', '最终输出', assistantMessage.content))
+    trace.push(
+      createTraceStep(assistantMessage.id, 'finalOutput', '最终输出', assistantMessage.content),
+    )
     return { messages: [toolMessage, assistantMessage], trace }
   }
 
   if (!weatherToolEnabled(config) && input.includes('天气')) {
     const assistantMessage = createMessage('assistant', '我没有天气查询能力')
     trace.push(createTraceStep(assistantMessage.id, 'input', '用户输入', input))
-    trace.push(createTraceStep(assistantMessage.id, 'finalOutput', '最终输出', assistantMessage.content))
+    trace.push(
+      createTraceStep(assistantMessage.id, 'finalOutput', '最终输出', assistantMessage.content),
+    )
     return { messages: [assistantMessage], trace }
   }
 
@@ -89,16 +92,19 @@ export function buildMockReply(input: string, config: AgentConfig): MockReply {
         '退款政策知识库：7 天无理由退款',
       ),
     )
-    trace.push(createTraceStep(assistantMessage.id, 'finalOutput', '最终输出', assistantMessage.content))
+    trace.push(
+      createTraceStep(assistantMessage.id, 'finalOutput', '最终输出', assistantMessage.content),
+    )
     return { messages: [assistantMessage], trace }
   }
 
-  const assistantMessage =
-    input.includes('你是谁')
-      ? createMessage('assistant', config.systemPrompt.slice(0, 40))
-      : createMessage('assistant', config.firstMessage)
+  const assistantMessage = input.includes('你是谁')
+    ? createMessage('assistant', config.systemPrompt.slice(0, 40))
+    : createMessage('assistant', config.firstMessage)
 
   trace.push(createTraceStep(assistantMessage.id, 'input', '用户输入', input))
-  trace.push(createTraceStep(assistantMessage.id, 'finalOutput', '最终输出', assistantMessage.content))
+  trace.push(
+    createTraceStep(assistantMessage.id, 'finalOutput', '最终输出', assistantMessage.content),
+  )
   return { messages: [assistantMessage], trace }
 }

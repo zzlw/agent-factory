@@ -24,8 +24,7 @@ const toolInput = computed(() => {
   }
   try {
     return JSON.parse(props.message.toolCall.args)
-  }
-  catch {
+  } catch {
     return props.message.toolCall.args
   }
 })
@@ -65,7 +64,12 @@ const toolInput = computed(() => {
 
   <!-- tool 消息：折叠卡片展示调用参数与结果（对齐 ai-elements 工具调用展示惯例） -->
   <Tool v-else class="mb-0">
-    <ToolHeader :title="message.toolCall?.name ?? '工具调用'" type="tool" state="output-available" />
+    <ToolHeader
+      type="dynamic-tool"
+      :tool-name="message.toolCall?.name ?? '工具调用'"
+      :title="message.toolCall?.name ?? '工具调用'"
+      state="output-available"
+    />
     <ToolContent>
       <ToolInput v-if="toolInput !== undefined" :input="toolInput" />
       <ToolOutput

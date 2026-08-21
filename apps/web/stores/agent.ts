@@ -1,9 +1,9 @@
 import {
+  type AgentConfig,
+  type AgentSnapshot,
   deriveStatus,
   hasUnpublishedChanges,
   hasUnsavedChanges,
-  type AgentConfig,
-  type AgentSnapshot,
 } from '@agent-factory/agent-core'
 import {
   initialAgentConfig,
@@ -35,7 +35,8 @@ export const useAgentStore = defineStore('agent', {
     hasUnsavedChanges: (state) => hasUnsavedChanges(state.config, state.savedConfig),
     hasUnpublishedChanges: (state) =>
       hasUnpublishedChanges(state.savedConfig, state.publishedConfig),
-    enabledCapabilityCount: (state) => state.config.capabilities.filter((item) => item.enabled).length,
+    enabledCapabilityCount: (state) =>
+      state.config.capabilities.filter((item) => item.enabled).length,
   },
   actions: {
     updateConfig(patch: Partial<AgentConfig>) {

@@ -2,10 +2,12 @@
 const agentStore = useAgentStore()
 
 const enabledToolCount = computed(
-  () => agentStore.config.capabilities.filter((item) => item.type === 'tool' && item.enabled).length,
+  () =>
+    agentStore.config.capabilities.filter((item) => item.type === 'tool' && item.enabled).length,
 )
 const enabledSkillCount = computed(
-  () => agentStore.config.capabilities.filter((item) => item.type === 'skill' && item.enabled).length,
+  () =>
+    agentStore.config.capabilities.filter((item) => item.type === 'skill' && item.enabled).length,
 )
 const enabledKnowledgeCount = computed(
   () =>
