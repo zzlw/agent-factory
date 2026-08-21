@@ -171,7 +171,7 @@ function onResizeStart(e: PointerEvent) {
       <!-- 消息流：StickToBottom 自动吸底；absolute inset-0 使高度只取决于定位祖先，不参与 flex 内容高度计算，彻底阻断“消息撑开面板”的整页滚动路径 -->
       <div class="relative min-h-0 flex-1">
         <Conversation class="absolute inset-0">
-          <ConversationContent class="gap-4 p-3">
+          <ConversationContent class="gap-2 p-3">
             <ChatMessage
               v-for="message in messages"
               :key="message.id"

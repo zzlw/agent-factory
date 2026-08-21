@@ -20,8 +20,12 @@ async function copyMessage() {
 
 <template>
   <!-- 用户/助手消息走 ai-elements Message 体系；tool 消息走 Tool 折叠卡片 -->
-  <Message v-if="message.role !== 'tool'" :from="message.role === 'user' ? 'user' : 'assistant'">
-    <div class="flex min-w-0 flex-col gap-1">
+  <Message
+    v-if="message.role !== 'tool'"
+    :from="message.role === 'user' ? 'user' : 'assistant'"
+    class="relative"
+  >
+    <div class="flex min-w-0 flex-col gap-2">
       <MessageContent>
         <!-- 助手消息按 Markdown 渲染（mock 回复含列表/加粗等结构） -->
         <MessageResponse v-if="message.role === 'assistant'" :content="message.content" />
@@ -41,7 +45,10 @@ async function copyMessage() {
         </ol>
       </details>
 
-      <MessageActions v-if="message.role === 'assistant'" class="opacity-0 transition-opacity group-hover:opacity-100">
+      <MessageActions
+        v-if="message.role === 'assistant'"
+        class="absolute top-0 right-0 opacity-0 transition-opacity group-hover:opacity-100"
+      >
         <MessageAction tooltip="复制" @click="copyMessage">
           <CheckIcon v-if="copied" class="size-4 text-green-600" />
           <CopyIcon v-else class="size-4" />
