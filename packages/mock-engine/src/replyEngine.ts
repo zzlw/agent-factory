@@ -86,10 +86,7 @@ export function buildMockReply(input: string, config: AgentConfig): MockReply {
   }
 
   if (knowledgeBaseEnabled(config) && input.includes('退款')) {
-    const assistantMessage = createMessage(
-      'assistant',
-      '已检索知识库：退款政策支持 7 天内无理由退款。',
-    )
+    const assistantMessage = createMessage('assistant', '退款政策支持 7 天内无理由退款。')
     trace.push(
       createTraceStep(
         assistantMessage.id,
