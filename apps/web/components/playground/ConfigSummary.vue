@@ -41,7 +41,9 @@ onBeforeUnmount(() => clearTimeout(flashTimer))
   >
     <p>模型：{{ agentStore.config.model }} · 温度：{{ agentStore.config.temperature }}</p>
     <p>能力：Tool {{ enabledToolCount }} / Skill {{ enabledSkillCount }} / KB {{ enabledKnowledgeCount }}</p>
-    <p class="truncate">Prompt：{{ agentStore.config.systemPrompt.slice(0, 80) }}</p>
+    <p class="line-clamp-2" :title="agentStore.config.systemPrompt">
+      Prompt：{{ agentStore.config.systemPrompt }}
+    </p>
     <p class="font-medium text-foreground">状态：{{ agentStore.status }}</p>
   </div>
 </template>
