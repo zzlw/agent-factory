@@ -15,7 +15,9 @@ import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
 
 function clone<T>(value: T): T {
-  return structuredClone(toRaw(value))
+  // structuredClone 无法克隆嵌套的响应式 Proxy（例如 updateConfig 里展开配置时泄漏的
+  // capabilities 数组代理），JSON 序列化会穿透代理读出原始数据，再解析得到纯对象。
+  return JSON.parse(JSON.stringify(toRaw(value))) as T
 }
 
 function errorMessage(error: unknown, fallback: string): string {
