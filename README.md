@@ -8,6 +8,7 @@
 - Pinia + Pinia Colada
 - shadcn-vue（Reka UI）+ Tailwind CSS v4
 - ai-elements-vue + vue-stream-markdown
+- TanStack Vue Table v8 + vee-validate + @vee-validate/zod
 - Zod + fast-deep-equal + nanoid
 - Nitro Server Routes（本地 Mock API）
 - Biome
@@ -27,6 +28,11 @@ pnpm typecheck  # 全仓类型检查
 pnpm lint       # Biome 检查
 pnpm lint:fix   # Biome 检查并自动修复
 ```
+
+## 依赖说明
+
+- `esbuild` 在 `pnpm-workspace.yaml` 中被固定为 `0.27.7`：pnpm 11 在重解析锁文件时会把 `esbuild@0.28.x` 的平台可选依赖（`@esbuild/darwin-arm64` 等）丢掉，导致 Nitro 构建报 `Host version 0.28.2 does not match binary version 0.27.7`。固定到 fontless 已锁定的 `0.27.7` 后 esbuild 只保留一份，平台依赖完整。
+- 本地包通过 workspace 协议引用，Nuxt 在 `nuxt.config.ts` 中声明了 `build.transpile`。
 
 ## 目录结构
 
@@ -49,3 +55,18 @@ packages/
 - **Playground 与配置同屏**：每次对话请求体携带当前 config 快照，Mock 回复引擎依据请求体回复，不读取前端全局状态。
 - **Evals-lite**：测试场景的通过 / 失败由 `ScenarioAssertion` 对实际回复与 Trace 计算得出。
 - **版本与回滚**：发布历史是不可变快照，回滚只把历史配置载入草稿，再次发布生成新版本。
+
+## 演示走查
+
+```text
+1. 打开 /overview，查看当前 Agent 状态、能力摘要与线上差异
+2. 右侧 Playground 用测试场景芯片发送“测试能力”
+3. 修改 System Prompt，顶栏状态变为 Draft
+4. 展开助手消息的“执行轨迹”查看 Trace
+5. 点击“运行全部场景”，查看 4 个场景的通过/失败摘要
+6. 保存（或 Cmd/Ctrl+S），状态变为 Saved
+7. 点击“发布更新”，填写发布说明，生成 v3
+8. 再次修改配置，进入 /versions 查看字段级 diff
+9. 从 v2 点击“回滚到此版本”，配置载入草稿，状态回到 Draft
+10. 顶栏“失败演示”后再保存/发布，验证 Nitro 返回 500 的失败路径
+```
