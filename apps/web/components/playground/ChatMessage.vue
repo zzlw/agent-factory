@@ -68,7 +68,7 @@ async function copyMessage() {
     </summary>
     <div class="mt-1.5 space-y-1 rounded-md bg-muted/40 px-2.5 py-2">
       <div>参数：<code class="font-mono text-xs">{{ message.toolCall?.args }}</code></div>
-      <div>结果：{{ message.toolCall?.result || message.content }}</div>
+      <div>结果：<code class="font-mono text-xs">{{ message.toolCall?.result || message.content }}</code></div>
     </div>
   </details>
 </template>
