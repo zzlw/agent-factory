@@ -9,9 +9,6 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2025-07-15',
   telemetry: false,
-  routeRules: {
-    '/': { redirect: '/overview' },
-  },
   css: ['~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
