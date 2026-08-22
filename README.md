@@ -1,16 +1,38 @@
 # Agent Factory 智能体工作台
 
-面向非开发者与开发者混合人群的 AI Agent 低代码构建平台。本仓库实现的是单个 Agent 的创建与调试工作台：配置 Prompt、模型与能力，在 Playground 中即时测试，并完成保存、发布、版本 diff 与回滚。
+面向非开发者与开发者混合人群的 AI Agent 低代码构建平台。当前聚焦单个 Agent 的创建与调试闭环：配置人设、模型与能力，在 Playground 中即时验证，并完成保存、发布、版本 diff、回滚与一键回归。
+
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?logo=vercel&logoColor=white)](https://agent-factory-vert.vercel.app) [![国内镜像](https://img.shields.io/badge/国内镜像-agent--factory.jiawen.live-orange?logo=cloudflare&logoColor=white)](https://agent-factory.jiawen.live) [![CI/CD](https://img.shields.io/github/deployments/zzlw/agent-factory/production?label=CI%2FCD&logo=githubactions&logoColor=white)](https://github.com/zzlw/agent-factory/deployments) [![Last Commit](https://img.shields.io/github/last-commit/zzlw/agent-factory?logo=git&logoColor=white)](https://github.com/zzlw/agent-factory/commits/main)
+
+[![Nuxt 4](https://img.shields.io/badge/Nuxt-4-00DC82?logo=nuxtdotjs&logoColor=white)](https://nuxt.com) [![Vue 3](https://img.shields.io/badge/Vue-3-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org) [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org) [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com) [![pnpm 11](https://img.shields.io/badge/pnpm-11-F69220?logo=pnpm&logoColor=white)](https://pnpm.io)
+
+## 在线体验
+
+- 默认地址：https://agent-factory-vert.vercel.app
+- 国内镜像：https://agent-factory.jiawen.live
+
+默认 Vercel 域名在国内网络环境下可能不稳定；国内用户请优先使用 `agent-factory.jiawen.live`。
+
+## 功能特性
+
+- **三栏工作台**：侧栏、配置面板与 Playground 同屏，分区切换不卸载组件树，会话与编辑状态自然保留。
+- **Agent 配置**：人设与开场、模型与语音、能力（Tool / Skill / Knowledge Base）开关管理。
+- **状态机**：`Draft` / `Saved` / `Published` 三态，由三个配置快照实时推导。
+- **Playground**：流式回复、工具调用卡片、执行轨迹 Trace、测试场景一键回归。
+- **保存与发布**：支持 `Cmd/Ctrl+S` 保存、发布说明 changelog、失败路径演示。
+- **版本管理**：不可变发布历史、字段级 diff、回滚到历史版本。
+- **Evals-lite**：基于 `ScenarioAssertion` 对实际回复与 Trace 做轻量回归断言。
+- **URL 状态分层**：分区走 path，Playground / 侧栏开关走 query，刷新、分享、前进后退均可恢复。
 
 ## 技术栈
 
-- pnpm monorepo + Nuxt 4 + Vue 3 + TypeScript
+- pnpm monorepo + Nuxt 4（SSR）+ Vue 3 + TypeScript
 - Pinia + Pinia Colada
 - shadcn-vue（Reka UI）+ Tailwind CSS v4
 - ai-elements-vue + vue-stream-markdown
 - TanStack Vue Table v8 + vee-validate + @vee-validate/zod
-- Zod + fast-deep-equal + nanoid
-- Nitro Server Routes（本地 Mock API）
+- Zod + fast-deep-equal + nanoid + date-fns
+- Nitro Server Routes（Mock API）
 - Biome
 
 ## 快速开始
@@ -29,9 +51,47 @@ pnpm lint       # Biome 检查
 pnpm lint:fix   # Biome 检查并自动修复
 ```
 
+## 目录结构
+
+```text
+apps/web/
+  components/    展示与交互组件（不直接调用 $fetch）
+  composables/   可复用的客户端逻辑
+  stores/        Pinia 全局状态与三快照状态机
+  pages/         分区路由入口
+  server/api/    Nitro Mock API
+  lib/           UI 基础工具
+packages/
+  agent-core/    纯 TS 领域包（类型、状态推导、Evals、Zod Schema、diff）
+  mock-engine/   Mock 数据、测试场景与回复规则引擎
+```
+
+## 核心架构
+
+- **三快照状态机**：`config` / `savedConfig` / `publishedConfig` 通过 `fast-deep-equal` 推导状态。
+- **不变量**：`publishedConfig === publishHistory[last].config`，`version === publishHistory[last].version`。
+- **状态边界**：Pinia 只维护跨组件共享的 Agent 配置与发布状态；消息流和 Trace 由 `useMockChat` 管理，不放进 Pinia。
+- **请求快照**：Playground 每次对话请求体携带当前 `config` 快照，`mock-engine` 依据请求体回复，不读取前端全局状态。
+- **服务端边界**：前端统一使用 `$fetch('/api/...')`，Nitro Server Route 负责结构化响应与失败路径模拟。
+
+## 演示走查
+
+```text
+1. 打开 /overview，查看当前 Agent 状态、能力摘要与线上差异
+2. 在 Playground 使用测试场景芯片发送“测试能力”
+3. 修改 System Prompt，顶栏状态变为 Draft
+4. 展开助手消息的“执行轨迹”查看 Trace
+5. 点击“运行全部场景”，查看场景通过 / 失败摘要
+6. 保存（或 Cmd/Ctrl+S），状态变为 Saved
+7. 点击“发布更新”，填写发布说明，生成新版本
+8. 再次修改配置，进入 /versions 查看字段级 diff
+9. 从历史版本点击“回滚到此版本”，配置载入草稿
+10. 顶栏“失败演示”后再保存或发布，验证 Nitro 500 失败路径
+```
+
 ## 部署与国内访问
 
-- Vercel 自动识别 Nuxt：Root Directory 设为 `apps/web`，Build/Install/Output 均使用自动检测，不在仓库里维护 `vercel.json`。
+- Vercel 自动识别 Nuxt：Root Directory 设为 `apps/web`，Build / Install / Output 均使用自动检测，仓库中不维护 `vercel.json`。
 - 默认地址：`https://agent-factory-vert.vercel.app`
 - 国内镜像：`https://agent-factory.jiawen.live`（通过 Cloudflare 权威 DNS 做 DNS-only CNAME 到 Vercel 中国区节点）
 
@@ -51,42 +111,5 @@ vercel domains verify agent-factory.jiawen.live
 
 ## 依赖说明
 
-- `esbuild` 在 `pnpm-workspace.yaml` 中被固定为 `0.27.7`：pnpm 11 在重解析锁文件时会把 `esbuild@0.28.x` 的平台可选依赖（`@esbuild/darwin-arm64` 等）丢掉，导致 Nitro 构建报 `Host version 0.28.2 does not match binary version 0.27.7`。固定到 fontless 已锁定的 `0.27.7` 后 esbuild 只保留一份，平台依赖完整。
+- `esbuild` 在 `pnpm-workspace.yaml` 中被固定为 `0.27.7`：pnpm 11 在重解析锁文件时会把 `esbuild@0.28.x` 的平台可选依赖（`@esbuild/darwin-arm64` 等）丢掉，导致 Nitro 构建报 `Host version 0.28.2 does not match binary version 0.27.7`。固定到已锁定的 `0.27.7` 后 esbuild 只保留一份，平台依赖完整。
 - 本地包通过 workspace 协议引用，Nuxt 在 `nuxt.config.ts` 中声明了 `build.transpile`。
-
-## 目录结构
-
-```text
-apps/web/
-  components/    展示与交互组件（不直接调用 $fetch）
-  composables/   可复用的客户端逻辑
-  stores/        Pinia 全局状态与三快照状态机
-  pages/         分区路由入口
-  server/api/    Nitro Mock API
-  lib/           UI 基础工具
-packages/
-  agent-core/    纯 TS 领域包（类型、状态推导、Evals、Zod Schema、diff）
-  mock-engine/   Mock 数据、测试场景与回复规则引擎
-```
-
-## 核心概念
-
-- **三快照状态机**：`config` / `savedConfig` / `publishedConfig` 通过 `fast-deep-equal` 推导 Draft / Saved / Published 状态。
-- **Playground 与配置同屏**：每次对话请求体携带当前 config 快照，Mock 回复引擎依据请求体回复，不读取前端全局状态。
-- **Evals-lite**：测试场景的通过 / 失败由 `ScenarioAssertion` 对实际回复与 Trace 计算得出。
-- **版本与回滚**：发布历史是不可变快照，回滚只把历史配置载入草稿，再次发布生成新版本。
-
-## 演示走查
-
-```text
-1. 打开 /overview，查看当前 Agent 状态、能力摘要与线上差异
-2. 右侧 Playground 用测试场景芯片发送“测试能力”
-3. 修改 System Prompt，顶栏状态变为 Draft
-4. 展开助手消息的“执行轨迹”查看 Trace
-5. 点击“运行全部场景”，查看 4 个场景的通过/失败摘要
-6. 保存（或 Cmd/Ctrl+S），状态变为 Saved
-7. 点击“发布更新”，填写发布说明，生成 v3
-8. 再次修改配置，进入 /versions 查看字段级 diff
-9. 从 v2 点击“回滚到此版本”，配置载入草稿，状态回到 Draft
-10. 顶栏“失败演示”后再保存/发布，验证 Nitro 返回 500 的失败路径
-```
