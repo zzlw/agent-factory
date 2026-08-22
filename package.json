@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "pnpm --filter @agent-factory/web dev",
     "build": "pnpm --filter @agent-factory/web build",
+    "generate": "pnpm --filter @agent-factory/web generate",
     "typecheck": "pnpm -r typecheck",
     "format": "biome format --write .",
     "lint": "biome check .",

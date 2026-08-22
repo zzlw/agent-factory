@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
+import { isServerUnavailable } from '~/lib/apiFallback'
 
 const agentStore = useAgentStore()
 const { activeSectionLabel } = useWorkbench()
@@ -31,13 +32,19 @@ async function confirmPublish() {
 }
 
 async function armFailure() {
-  await $fetch('/api/agent/fail' as string & {}, {
-    method: 'POST',
-    body: { enabled: true },
-  })
-  toast.info('已武装失败演示', {
-    description: '下一次保存或发布将返回 500',
-  })
+  try {
+    await $fetch('/api/agent/fail' as string & {}, {
+      method: 'POST',
+      body: { enabled: true },
+    })
+    toast.info('已武装失败演示', {
+      description: '下一次保存或发布将返回 500',
+    })
+  } catch (error) {
+    if (isServerUnavailable(error)) {
+      toast.info('静态部署不支持失败演示')
+    }
+  }
 }
 
 watch(

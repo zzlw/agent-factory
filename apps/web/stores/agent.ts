@@ -13,6 +13,7 @@ import {
 } from '@agent-factory/mock-engine'
 import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
+import { isServerUnavailable } from '~/lib/apiFallback'
 
 function clone<T>(value: T): T {
   // structuredClone 无法克隆嵌套的响应式 Proxy（例如 updateConfig 里展开配置时泄漏的
@@ -31,6 +32,25 @@ function errorMessage(error: unknown, fallback: string): string {
     }
   }
   return fallback
+}
+
+async function saveRequest(config: AgentConfig): Promise<void> {
+  try {
+    await $fetch('/api/agent/save' as string & {}, { method: 'POST', body: config })
+  } catch (error) {
+    if (!isServerUnavailable(error)) throw error
+  }
+}
+
+async function publishRequest(config: AgentConfig, changelog?: string): Promise<void> {
+  try {
+    await $fetch('/api/agent/publish' as string & {}, {
+      method: 'POST',
+      body: { config, changelog },
+    })
+  } catch (error) {
+    if (!isServerUnavailable(error)) throw error
+  }
 }
 
 export const useAgentStore = defineStore('agent', {
@@ -67,10 +87,7 @@ export const useAgentStore = defineStore('agent', {
       this.saving = true
       this.error = null
       try {
-        await $fetch('/api/agent/save' as string & {}, {
-          method: 'POST',
-          body: clone(this.config),
-        })
+        await saveRequest(clone(this.config))
         this.savedConfig = clone(this.config)
         this.lastSavedAt = new Date().toISOString()
       } catch (error) {
@@ -89,10 +106,7 @@ export const useAgentStore = defineStore('agent', {
       this.publishing = true
       this.error = null
       try {
-        await $fetch('/api/agent/publish' as string & {}, {
-          method: 'POST',
-          body: { config: nextConfig, changelog },
-        })
+        await publishRequest(nextConfig, changelog)
         this.publishedConfig = nextConfig
         this.savedConfig = nextConfig
         this.version += 1
