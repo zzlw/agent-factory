@@ -29,6 +29,26 @@ pnpm lint       # Biome 检查
 pnpm lint:fix   # Biome 检查并自动修复
 ```
 
+## 部署与国内访问
+
+- Vercel 自动识别 Nuxt：Root Directory 设为 `apps/web`，Build/Install/Output 均使用自动检测，不在仓库里维护 `vercel.json`。
+- 默认地址：`https://agent-factory-vert.vercel.app`
+- 国内镜像：`https://agent-factory.jiawen.live`（通过 Cloudflare 权威 DNS 做 DNS-only CNAME 到 Vercel 中国区节点）
+
+复现方式：
+
+```bash
+vercel domains add agent-factory.jiawen.live agent-factory
+
+curl -X POST "https://api.cloudflare.com/client/v4/zones/<zone_id>/dns_records" \
+  -H "Authorization: Bearer <api_token>" -H "Content-Type: application/json" \
+  -d '{"type":"CNAME","name":"agent-factory","content":"cname-china.vercel-dns.com","proxied":false}'
+
+vercel domains verify agent-factory.jiawen.live
+```
+
+要点：CNAME 必须关闭 Cloudflare 代理（灰云 / DNS only），流量直达 `cname-china.vercel-dns.com`；开橙云会绕行 Cloudflare 代理并与 Vercel 证书冲突。
+
 ## 依赖说明
 
 - `esbuild` 在 `pnpm-workspace.yaml` 中被固定为 `0.27.7`：pnpm 11 在重解析锁文件时会把 `esbuild@0.28.x` 的平台可选依赖（`@esbuild/darwin-arm64` 等）丢掉，导致 Nitro 构建报 `Host version 0.28.2 does not match binary version 0.27.7`。固定到 fontless 已锁定的 `0.27.7` 后 esbuild 只保留一份，平台依赖完整。
