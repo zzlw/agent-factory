@@ -2,9 +2,20 @@
 
 面向非开发者与开发者混合人群的 AI Agent 低代码构建平台。当前聚焦单个 Agent 的创建与调试闭环：配置人设、模型与能力，在 Playground 中即时验证，并完成保存、发布、版本 diff、回滚与一键回归。
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?logo=vercel&logoColor=white)](https://agent-factory-vert.vercel.app) [![国内镜像](https://img.shields.io/badge/国内镜像-agent--factory.jiawen.live-orange?logo=cloudflare&logoColor=white)](https://agent-factory.jiawen.live) [![CI/CD](https://img.shields.io/github/deployments/zzlw/agent-factory/production?label=CI%2FCD&logo=githubactions&logoColor=white)](https://github.com/zzlw/agent-factory/deployments) [![Last Commit](https://img.shields.io/github/last-commit/zzlw/agent-factory?logo=git&logoColor=white)](https://github.com/zzlw/agent-factory/commits/main)
+<p align="center">
+  <a href="https://agent-factory-vert.vercel.app"><img src="https://img.shields.io/badge/Live_Demo-Vercel-black?style=flat-square&amp;logo=vercel&amp;logoColor=white" alt="Live Demo"></a>
+  <a href="https://agent-factory.jiawen.live"><img src="https://img.shields.io/badge/国内镜像-agent--factory.jiawen.live-orange?style=flat-square&amp;logo=cloudflare&amp;logoColor=white" alt="国内镜像"></a>
+  <a href="https://github.com/zzlw/agent-factory/deployments"><img src="https://img.shields.io/github/deployments/zzlw/agent-factory/production?label=CI%2FCD&amp;style=flat-square&amp;logo=githubactions&amp;logoColor=white" alt="CI/CD"></a>
+  <a href="https://github.com/zzlw/agent-factory/commits/main"><img src="https://img.shields.io/github/last-commit/zzlw/agent-factory?style=flat-square&amp;logo=git&amp;logoColor=white" alt="Last Commit"></a>
+</p>
 
-[![Nuxt 4](https://img.shields.io/badge/Nuxt-4-00DC82?logo=nuxtdotjs&logoColor=white)](https://nuxt.com) [![Vue 3](https://img.shields.io/badge/Vue-3-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org) [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org) [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com) [![pnpm 11](https://img.shields.io/badge/pnpm-11-F69220?logo=pnpm&logoColor=white)](https://pnpm.io)
+<p align="center">
+  <a href="https://nuxt.com"><img src="https://img.shields.io/badge/Nuxt-4-00DC82?style=flat-square&amp;logo=nuxtdotjs&amp;logoColor=white" alt="Nuxt 4"></a>
+  <a href="https://vuejs.org"><img src="https://img.shields.io/badge/Vue-3-4FC08D?style=flat-square&amp;logo=vuedotjs&amp;logoColor=white" alt="Vue 3"></a>
+  <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&amp;logo=typescript&amp;logoColor=white" alt="TypeScript"></a>
+  <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4-38BDF8?style=flat-square&amp;logo=tailwindcss&amp;logoColor=white" alt="Tailwind CSS v4"></a>
+  <a href="https://pnpm.io"><img src="https://img.shields.io/badge/pnpm-11-F69220?style=flat-square&amp;logo=pnpm&amp;logoColor=white" alt="pnpm 11"></a>
+</p>
 
 ## 在线体验
 
