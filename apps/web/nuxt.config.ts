@@ -3,6 +3,11 @@ import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   modules: ['@pinia/nuxt', '@pinia/colada-nuxt', 'shadcn-nuxt', '@nuxt/fonts'],
+  // GitHub Pages 静态托管：纯客户端 SPA
+  ssr: false,
+  app: {
+    baseURL: process.env.NUXT_APP_BASE_URL || '/',
+  },
 
   shadcn: {
     prefix: '',
@@ -10,10 +15,6 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2025-07-15',
   telemetry: false,
-  // 根路径重定向到概览分区（打开工作台先看概览，与左侧菜单首项一致）
-  routeRules: {
-    '/': { redirect: '/overview' },
-  },
   css: ['~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
