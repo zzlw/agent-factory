@@ -8,3 +8,4 @@ dist
 .env
 .env.*
 .pnpm-store
+.vercel

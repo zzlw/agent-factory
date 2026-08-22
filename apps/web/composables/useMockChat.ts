@@ -1,27 +1,7 @@
-import type { AgentConfig, Message, TraceStep } from '@agent-factory/agent-core'
-import { buildMockReply } from '@agent-factory/mock-engine'
+import type { Message, TraceStep } from '@agent-factory/agent-core'
 import { nanoid } from 'nanoid'
-import { isServerUnavailable } from '~/lib/apiFallback'
 
 const STREAM_INTERVAL_MS = 16
-
-async function chatRequest(
-  input: string,
-  config: AgentConfig,
-): Promise<{ messages: Message[]; trace: TraceStep[] }> {
-  try {
-    return await $fetch<{ messages: Message[]; trace: TraceStep[] }>(
-      '/api/agent/chat' as string & {},
-      {
-        method: 'POST',
-        body: { input, config },
-      },
-    )
-  } catch (error) {
-    if (!isServerUnavailable(error)) throw error
-    return buildMockReply(input, config)
-  }
-}
 
 function createFirstMessage(content: string): Message {
   return {
@@ -90,7 +70,13 @@ export function useMockChat() {
 
     try {
       const config = JSON.parse(JSON.stringify(agentStore.config))
-      const reply = await chatRequest(trimmed, config)
+      const reply = await $fetch<{ messages: Message[]; trace: TraceStep[] }>(
+        '/api/agent/chat' as string & {},
+        {
+          method: 'POST',
+          body: { input: trimmed, config },
+        },
+      )
 
       for (const message of reply.messages) {
         messages.value.push(message)
