@@ -51,6 +51,31 @@ function knowledgeBaseEnabled(config: AgentConfig): boolean {
   )
 }
 
+function translationSkillEnabled(config: AgentConfig): boolean {
+  return config.capabilities.some(
+    (item) => item.type === 'skill' && item.name === '翻译' && item.enabled,
+  )
+}
+
+function isTranslationRequest(input: string): boolean {
+  return (
+    input.includes('翻译') ||
+    input.includes('英文') ||
+    input.includes('英语') ||
+    input.toLowerCase().includes('translate')
+  )
+}
+
+function resolveMockTranslation(input: string): string {
+  if (input.includes('日语') || input.includes('日文')) {
+    return 'こんにちは、私はあなたのスマートアシスタントです。'
+  }
+  if (input.includes('法语') || input.includes('法文')) {
+    return 'Bonjour, je suis votre assistant intelligent.'
+  }
+  return 'Hello, I am your intelligent assistant.'
+}
+
 function enabledKnowledgeBaseSummary(config: AgentConfig): string {
   const items = config.capabilities.filter((item) => item.type === 'knowledgeBase' && item.enabled)
   if (items.length === 0) {
@@ -100,6 +125,19 @@ export function buildMockReply(input: string, config: AgentConfig): MockReply {
 
   if (!knowledgeBaseEnabled(config) && input.includes('退款')) {
     const assistantMessage = createMessage('assistant', '我没有接入知识库，无法回答退款问题')
+    return { messages: [assistantMessage], trace }
+  }
+
+  if (isTranslationRequest(input)) {
+    if (!translationSkillEnabled(config)) {
+      const assistantMessage = createMessage('assistant', '我没有翻译能力')
+      return { messages: [assistantMessage], trace }
+    }
+
+    const assistantMessage = createMessage('assistant', resolveMockTranslation(input))
+    trace.push(
+      createTraceStep(assistantMessage.id, 'modelOutput', '翻译 Skill', '将用户输入翻译为目标语言'),
+    )
     return { messages: [assistantMessage], trace }
   }
 
