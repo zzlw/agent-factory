@@ -1,5 +1,0 @@
-{
-  "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "NITRO_PRESET=static pnpm --filter @agent-factory/web generate",
-  "outputDirectory": "apps/web/.output/public"
-}

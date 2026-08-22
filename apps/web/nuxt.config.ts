@@ -3,13 +3,15 @@ import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   modules: ['@pinia/nuxt', '@pinia/colada-nuxt', 'shadcn-nuxt', '@nuxt/fonts'],
-  ssr: false,
   shadcn: {
     prefix: '',
     componentDir: '~/components/ui',
   },
   compatibilityDate: '2025-07-15',
   telemetry: false,
+  routeRules: {
+    '/': { redirect: '/overview' },
+  },
   css: ['~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
