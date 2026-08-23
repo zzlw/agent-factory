@@ -3,6 +3,12 @@ import { testScenarios } from '@agent-factory/mock-engine'
 import { PanelRightClose, PanelRightOpen, RotateCcw, Square } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 import type { PromptInputMessage } from '~/components/ai-elements/prompt-input/types'
+import {
+  PLAYGROUND_DEFAULT_WIDTH,
+  PLAYGROUND_MAX_WIDTH,
+  PLAYGROUND_MIN_WIDTH,
+  playgroundWidthStyle,
+} from './width'
 
 const route = useRoute()
 const router = useRouter()
@@ -31,23 +37,18 @@ function runScenario(input: string) {
 
 // Playground 宽度与抽屉开合同一真源（URL query ?pw=）：刷新/分享/前进后退均恢复，
 // 不依赖 localStorage（内嵌 webview 可能不可用）。默认宽度不写入 query 保持 URL 干净。
-const DEFAULT_WIDTH = 384
-// 最小宽度即默认宽度：不允许拖到默认值以下，面板只向“更宽”方向调整
-const MIN_WIDTH = DEFAULT_WIDTH
-const MAX_WIDTH = 640
-
 function clampWidth(value: number) {
-  return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, Math.round(value)))
+  return Math.min(PLAYGROUND_MAX_WIDTH, Math.max(PLAYGROUND_MIN_WIDTH, Math.round(value)))
 }
 
 const queryWidth = computed(() => {
   const raw = Number(route.query.pw)
-  return Number.isFinite(raw) ? clampWidth(raw) : DEFAULT_WIDTH
+  return Number.isFinite(raw) ? clampWidth(raw) : PLAYGROUND_DEFAULT_WIDTH
 })
 
 const playgroundWidth = ref(queryWidth.value)
 const overlayOpen = computed(() => isCompact.value && playgroundOpen.value)
-const panelStyle = computed(() => `--playground-width: ${playgroundWidth.value}px`)
+const panelStyle = computed(() => playgroundWidthStyle(playgroundWidth.value))
 // 浏览器前进/后退或手动改 URL 时同步宽度（分区切换等 query 不变的导航不会触发）
 watch(queryWidth, (width) => {
   if (width !== playgroundWidth.value) {
@@ -77,7 +78,7 @@ function onResizeStart(e: PointerEvent) {
       document.body.style.cursor = 'col-resize'
     }
     // 面板贴右缘：鼠标右移 → 宽度收窄
-    playgroundWidth.value = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, delta))
+    playgroundWidth.value = clampWidth(delta)
   }
   const onUp = () => {
     if (dragging) {
@@ -86,7 +87,10 @@ function onResizeStart(e: PointerEvent) {
       // 拖拽结束才写 URL（拖拽中逐帧 replace 太重），replace 不污染历史栈
       const width = playgroundWidth.value
       router.replace({
-        query: { ...route.query, pw: width === DEFAULT_WIDTH ? undefined : String(width) },
+        query: {
+          ...route.query,
+          pw: width === PLAYGROUND_DEFAULT_WIDTH ? undefined : String(width),
+        },
       })
     }
     document.removeEventListener('pointermove', onMove)
@@ -131,30 +135,24 @@ function onResizeStart(e: PointerEvent) {
     />
   </Transition>
 
-  <!-- 桌面：宽度过渡；紧凑视口：右侧抽屉滑入/滑出（与左侧 Sheet 同手势语义） -->
-  <Transition
-    :css="isCompact"
-    enter-active-class="transition-transform duration-300 ease-out"
-    enter-from-class="translate-x-full"
-    leave-active-class="transition-transform duration-200 ease-in"
-    leave-to-class="translate-x-full"
+  <!-- 紧凑抽屉用 translate，不用 v-show / hidden：display:none 会掐断离场动画 -->
+  <aside
+    :class="cn(
+      'flex min-h-0 shrink-0 flex-col overflow-hidden border-l bg-background',
+      'max-lg:fixed max-lg:inset-y-0 max-lg:right-0 max-lg:z-50 max-lg:h-svh max-lg:w-(--playground-width) max-lg:max-w-[85vw] max-lg:shadow-lg',
+      'max-md:inset-0 max-md:w-full max-md:max-w-none max-md:shadow-none',
+      'max-lg:transition-transform motion-reduce:max-lg:transition-none',
+      playgroundOpen
+        ? 'max-lg:translate-x-0 max-lg:duration-300 max-lg:ease-out lg:relative lg:w-(--playground-width)'
+        : 'max-lg:pointer-events-none max-lg:translate-x-full max-lg:duration-200 max-lg:ease-in lg:relative lg:w-10',
+      resizing ? '' : 'lg:transition-[width] duration-200 ease-linear',
+    )"
+    :style="panelStyle"
+    :role="overlayOpen ? 'dialog' : undefined"
+    :aria-modal="overlayOpen ? true : undefined"
+    :aria-hidden="isCompact && !playgroundOpen ? true : undefined"
+    :aria-label="overlayOpen ? 'Playground' : undefined"
   >
-    <aside
-      v-show="playgroundOpen || !isCompact"
-      :class="cn(
-        'flex min-h-0 shrink-0 flex-col overflow-hidden border-l bg-background',
-        'max-lg:fixed max-lg:inset-y-0 max-lg:right-0 max-lg:z-50 max-lg:h-svh max-lg:w-80 max-lg:max-w-[85vw] max-lg:shadow-lg',
-        'max-md:inset-0 max-md:w-full max-md:max-w-none max-md:shadow-none',
-        playgroundOpen
-          ? 'lg:relative lg:w-(--playground-width)'
-          : 'max-lg:hidden lg:relative lg:w-10',
-        resizing ? '' : 'lg:transition-[width] duration-200 ease-linear',
-      )"
-      :style="panelStyle"
-      :role="overlayOpen ? 'dialog' : undefined"
-      :aria-modal="overlayOpen ? true : undefined"
-      :aria-label="overlayOpen ? 'Playground' : undefined"
-    >
     <!-- 展开态内容：宽度跟随面板实时宽度，防过渡期重排；min-h-0 锁死高度链，让滚动收敛在消息区内 -->
     <div
       class="flex h-full min-h-0 flex-1 flex-col transition-opacity duration-200 ease-linear"
@@ -271,7 +269,7 @@ function onResizeStart(e: PointerEvent) {
             <span class="hidden text-[13px] text-muted-foreground sm:inline">
               Enter 发送 · Shift+Enter 换行
             </span>
-            <PromptInputSubmit :disabled="sending || streaming" />
+            <PromptInputSubmit class="ml-auto" :disabled="sending || streaming" />
           </PromptInputFooter>
         </PromptInput>
       </div>
@@ -305,5 +303,4 @@ function onResizeStart(e: PointerEvent) {
       </p>
     </div>
     </aside>
-  </Transition>
 </template>
