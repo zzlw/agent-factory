@@ -1,10 +1,12 @@
-# Agent Factory 智能体工作台
+# Agent Factory
 
-面向非开发者与开发者混合人群的 AI Agent 低代码构建平台。当前聚焦单个 Agent 的创建与调试闭环：配置人设、模型与能力，在 Playground 中即时验证，并完成保存、发布、版本 diff、回滚与一键回归。
+Agent Factory is an AI agent low-code builder for developers and non-developers. It currently focuses on a single-agent creation and debugging loop: configure persona, model, and capabilities, validate them in the Playground, then save, publish, diff versions, roll back, and run one-click regression.
+
+[简体中文](README.zh-CN.md) | English
 
 <p align="center">
   <a href="https://agent-factory-vert.vercel.app"><img src="https://img.shields.io/badge/Live_Demo-Vercel-black?style=flat-square&amp;logo=vercel&amp;logoColor=white" alt="Live Demo"></a>
-  <a href="https://agent-factory.jiawen.live"><img src="https://img.shields.io/badge/国内镜像-agent--factory.jiawen.live-orange?style=flat-square&amp;logo=cloudflare&amp;logoColor=white" alt="国内镜像"></a>
+  <a href="https://agent-factory.jiawen.live"><img src="https://img.shields.io/badge/China_Mirror-agent--factory.jiawen.live-orange?style=flat-square&amp;logo=cloudflare&amp;logoColor=white" alt="China Mirror"></a>
   <a href="https://github.com/zzlw/agent-factory/deployments"><img src="https://img.shields.io/github/deployments/zzlw/agent-factory/production?label=CI%2FCD&amp;style=flat-square&amp;logo=githubactions&amp;logoColor=white" alt="CI/CD"></a>
   <a href="https://github.com/zzlw/agent-factory/commits/main"><img src="https://img.shields.io/github/last-commit/zzlw/agent-factory?style=flat-square&amp;logo=git&amp;logoColor=white" alt="Last Commit"></a>
 </p>
@@ -17,96 +19,96 @@
   <a href="https://pnpm.io"><img src="https://img.shields.io/badge/pnpm-11-F69220?style=flat-square&amp;logo=pnpm&amp;logoColor=white" alt="pnpm 11"></a>
 </p>
 
-## 在线体验
+## Live Demos
 
-- 默认地址：https://agent-factory-vert.vercel.app
-- 国内镜像：https://agent-factory.jiawen.live
+- Default: https://agent-factory-vert.vercel.app
+- China mirror: https://agent-factory.jiawen.live
 
-默认 Vercel 域名在国内网络环境下可能不稳定；国内用户请优先使用 `agent-factory.jiawen.live`。
+The default Vercel domain can be unreliable in mainland China. Use `agent-factory.jiawen.live` when accessing from China.
 
-## 功能特性
+## Features
 
-- **三栏工作台**：侧栏、配置面板与 Playground 同屏，分区切换不卸载组件树，会话与编辑状态自然保留。
-- **Agent 配置**：人设与开场、模型与语音、能力（Tool / Skill / Knowledge Base）开关管理。
-- **状态机**：`Draft` / `Saved` / `Published` 三态，由三个配置快照实时推导。
-- **Playground**：流式回复、工具调用卡片、执行轨迹 Trace、测试场景一键回归。
-- **保存与发布**：支持 `Cmd/Ctrl+S` 保存、发布说明 changelog、失败路径演示。
-- **版本管理**：不可变发布历史、字段级 diff、回滚到历史版本。
-- **Evals-lite**：基于 `ScenarioAssertion` 对实际回复与 Trace 做轻量回归断言。
-- **URL 状态分层**：分区走 path，Playground / 侧栏开关走 query，刷新、分享、前进后退均可恢复。
+- **Three-pane workbench**: sidebar, configuration panel, and Playground side by side. Switching sections preserves the component tree, chat session, and editing state.
+- **Agent configuration**: persona and greeting, model and voice, and capability toggles for Tool / Skill / Knowledge Base.
+- **State machine**: `Draft` / `Saved` / `Published` is derived from three configuration snapshots in real time.
+- **Playground**: streaming replies, tool-call cards, execution traces, and one-click scenario regression.
+- **Save and publish**: `Cmd/Ctrl+S` save, changelog-driven publishing, and simulated failure paths.
+- **Version management**: immutable publish history, field-level diff, and rollback to a previous version.
+- **Evals-lite**: `ScenarioAssertion` checks real replies and traces instead of relying on hard-coded outcomes.
+- **URL state layering**: sections live in the path while Playground/sidebar state lives in the query string, so refresh, sharing, and back/forward navigation all recover correctly.
 
-## 技术栈
+## Tech Stack
 
-- pnpm monorepo + Nuxt 4（SSR）+ Vue 3 + TypeScript
+- pnpm monorepo + Nuxt 4 (SSR) + Vue 3 + TypeScript
 - Pinia + Pinia Colada
-- shadcn-vue（Reka UI）+ Tailwind CSS v4
+- shadcn-vue (Reka UI) + Tailwind CSS v4
 - ai-elements-vue + vue-stream-markdown
 - TanStack Vue Table v8 + vee-validate + @vee-validate/zod
 - Zod + fast-deep-equal + nanoid + date-fns
-- Nitro Server Routes（Mock API）
+- Nitro Server Routes (mock API)
 - Biome
 
-## 快速开始
+## Getting Started
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-打开 `http://localhost:3000`。其他命令：
+Open `http://localhost:3000`. Other commands:
 
 ```bash
-pnpm build      # 生产构建
-pnpm typecheck  # 全仓类型检查
-pnpm lint       # Biome 检查
-pnpm lint:fix   # Biome 检查并自动修复
+pnpm build      # production build
+pnpm typecheck  # type-check the whole repository
+pnpm lint       # run Biome checks
+pnpm lint:fix   # run Biome checks and fix
 ```
 
-## 目录结构
+## Project Structure
 
 ```text
 apps/web/
-  components/    展示与交互组件（不直接调用 $fetch）
-  composables/   可复用的客户端逻辑
-  stores/        Pinia 全局状态与三快照状态机
-  pages/         分区路由入口
-  server/api/    Nitro Mock API
-  lib/           UI 基础工具
+  components/    presentation and interaction components (no direct $fetch)
+  composables/   reusable client logic
+  stores/        Pinia global state and three-snapshot state machine
+  pages/         section route entry points
+  server/api/    Nitro mock API
+  lib/           base UI utilities
 packages/
-  agent-core/    纯 TS 领域包（类型、状态推导、Evals、Zod Schema、diff）
-  mock-engine/   Mock 数据、测试场景与回复规则引擎
+  agent-core/    pure TypeScript domain package (types, status, Evals, Zod schemas, diff)
+  mock-engine/   mock data, test scenarios, and reply rule engine
 ```
 
-## 核心架构
+## Core Architecture
 
-- **三快照状态机**：`config` / `savedConfig` / `publishedConfig` 通过 `fast-deep-equal` 推导状态。
-- **不变量**：`publishedConfig === publishHistory[last].config`，`version === publishHistory[last].version`。
-- **状态边界**：Pinia 只维护跨组件共享的 Agent 配置与发布状态；消息流和 Trace 由 `useMockChat` 管理，不放进 Pinia。
-- **请求快照**：Playground 每次对话请求体携带当前 `config` 快照，`mock-engine` 依据请求体回复，不读取前端全局状态。
-- **服务端边界**：前端统一使用 `$fetch('/api/...')`，Nitro Server Route 负责结构化响应与失败路径模拟。
+- **Three-snapshot state machine**: `config` / `savedConfig` / `publishedConfig` are compared with `fast-deep-equal` to derive state.
+- **Invariants**: `publishedConfig === publishHistory[last].config` and `version === publishHistory[last].version`.
+- **State boundaries**: Pinia owns shared agent configuration and publishing state; message flow and traces live in `useMockChat`.
+- **Request snapshots**: every Playground request sends the current `config` snapshot, and `mock-engine` replies from that snapshot instead of reading frontend global state.
+- **Server boundary**: the frontend always uses `$fetch('/api/...')`; Nitro server routes provide structured responses and simulate failure paths.
 
-## 演示走查
+## Demo Walkthrough
 
 ```text
-1. 打开 /overview，查看当前 Agent 状态、能力摘要与线上差异
-2. 在 Playground 使用测试场景芯片发送“测试天气查询”
-3. 修改 System Prompt，顶栏状态变为 Draft
-4. 展开助手消息的“执行轨迹”查看 Trace
-5. 点击“运行全部场景”，查看场景通过 / 失败摘要
-6. 保存（或 Cmd/Ctrl+S），状态变为 Saved
-7. 点击“发布更新”，填写发布说明，生成新版本
-8. 再次修改配置，进入 /versions 查看字段级 diff
-9. 从历史版本点击“回滚到此版本”，配置载入草稿
-10. 顶栏“失败演示”后再保存或发布，验证 Nitro 500 失败路径
+1. Open /overview and inspect the current agent status, capability summary, and published diff
+2. In the Playground, click the "Test Weather" scenario chip
+3. Edit the System Prompt and watch the header status become Draft
+4. Expand the assistant message's execution trace
+5. Click "Run All Scenarios" and review the pass/fail summary
+6. Save (or press Cmd/Ctrl+S) and watch the status become Saved
+7. Click "Publish Update", add a changelog, and create a new version
+8. Change the configuration again, then open /versions to inspect the field-level diff
+9. Roll back to an earlier version and confirm the draft is loaded
+10. Arm the failure demo, then save or publish to verify the Nitro 500 path
 ```
 
-## 部署与国内访问
+## Deployment and China Access
 
-- Vercel 自动识别 Nuxt：Root Directory 设为 `apps/web`，Build / Install / Output 均使用自动检测，仓库中不维护 `vercel.json`。
-- 默认地址：`https://agent-factory-vert.vercel.app`
-- 国内镜像：`https://agent-factory.jiawen.live`（通过 Cloudflare 权威 DNS 做 DNS-only CNAME 到 Vercel 中国区节点）
+- Vercel auto-detects Nuxt: set Root Directory to `apps/web` and leave Build / Install / Output on auto-detect. Do not maintain a `vercel.json` in the repository.
+- Default URL: `https://agent-factory-vert.vercel.app`
+- China mirror: `https://agent-factory.jiawen.live`, using a DNS-only CNAME from Cloudflare to Vercel's China-optimized endpoint.
 
-复现方式：
+Reproduce it with:
 
 ```bash
 vercel domains add agent-factory.jiawen.live agent-factory
@@ -118,9 +120,9 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/<zone_id>/dns_records" 
 vercel domains verify agent-factory.jiawen.live
 ```
 
-要点：CNAME 必须关闭 Cloudflare 代理（灰云 / DNS only），流量直达 `cname-china.vercel-dns.com`；开橙云会绕行 Cloudflare 代理并与 Vercel 证书冲突。
+Keep Cloudflare proxying disabled (gray cloud / DNS only) so traffic goes directly to `cname-china.vercel-dns.com`. Enabling the orange cloud would route through Cloudflare and conflict with Vercel's certificate.
 
-## 依赖说明
+## Dependency Notes
 
-- `esbuild` 在 `pnpm-workspace.yaml` 中被固定为 `0.27.7`：pnpm 11 在重解析锁文件时会把 `esbuild@0.28.x` 的平台可选依赖（`@esbuild/darwin-arm64` 等）丢掉，导致 Nitro 构建报 `Host version 0.28.2 does not match binary version 0.27.7`。固定到已锁定的 `0.27.7` 后 esbuild 只保留一份，平台依赖完整。
-- 本地包通过 workspace 协议引用，Nuxt 在 `nuxt.config.ts` 中声明了 `build.transpile`。
+- `esbuild` is pinned to `0.27.7` in `pnpm-workspace.yaml`: pnpm 11 drops platform-specific optional dependencies (`@esbuild/darwin-arm64`, etc.) while re-resolving the lockfile, which can cause Nitro to report `Host version 0.28.2 does not match binary version 0.27.7`. Pinning to `0.27.7` keeps a single esbuild version with complete platform dependencies.
+- Local packages are consumed through workspace protocol; Nuxt declares them in `nuxt.config.ts` under `build.transpile`.
