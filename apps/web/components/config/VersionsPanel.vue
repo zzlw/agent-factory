@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
 const agentStore = useAgentStore()
+const { isMobile } = useIsMobile()
 
 const pendingRollback = ref<AgentSnapshot | null>(null)
 const rollbackOpen = computed({
@@ -121,7 +122,7 @@ function formatTime(iso: string | null): string {
         <CardDescription>版本记录来自不可变快照，回滚会把历史配置载入草稿。</CardDescription>
       </CardHeader>
       <CardContent>
-        <table class="w-full text-sm">
+        <table v-if="!isMobile" class="w-full text-sm">
           <thead>
             <tr class="border-b text-left text-muted-foreground">
               <th
@@ -148,6 +149,36 @@ function formatTime(iso: string | null): string {
             </tr>
           </tbody>
         </table>
+        <div v-else class="grid gap-2">
+          <div
+            v-for="row in table.getRowModel().rows"
+            :key="row.id"
+            class="rounded-lg border p-3"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <Badge variant="default">v{{ row.original.version }}</Badge>
+              <span
+                v-if="row.original.version === currentVersion"
+                class="text-xs text-muted-foreground"
+              >
+                线上版本
+              </span>
+              <Button
+                v-else
+                variant="outline"
+                size="sm"
+                @click="pendingRollback = row.original"
+              >
+                <RotateCcw class="size-4" />
+                回滚
+              </Button>
+            </div>
+            <p class="mt-2 text-xs text-muted-foreground">
+              {{ formatTime(row.original.publishedAt) }}
+            </p>
+            <p class="mt-1 text-sm">{{ row.original.changelog ?? '—' }}</p>
+          </div>
+        </div>
       </CardContent>
     </Card>
 

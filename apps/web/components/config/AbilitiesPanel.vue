@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 
 const agentStore = useAgentStore()
+const { isMobile } = useIsMobile()
 
 const typeLabels: Record<CapabilityType, string> = {
   tool: 'Tool',
@@ -126,7 +127,7 @@ function setCapabilityEnabled(id: string, enabled: boolean) {
 
     <Card class="py-4">
       <CardContent>
-        <table class="w-full text-sm">
+        <table v-if="!isMobile" class="w-full text-sm">
           <thead>
             <tr class="border-b text-left text-muted-foreground">
               <th
@@ -165,6 +166,42 @@ function setCapabilityEnabled(id: string, enabled: boolean) {
             </tr>
           </tbody>
         </table>
+        <div v-else class="grid gap-2">
+          <div
+            v-for="row in table.getRowModel().rows"
+            :key="row.id"
+            class="rounded-lg border p-3"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex min-w-0 items-center gap-2">
+                <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted">
+                  <component :is="typeIcons[row.original.type]" class="size-4" />
+                </span>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <span class="truncate text-sm font-medium">{{ row.original.name }}</span>
+                    <Badge v-if="row.original.integration === 'mcp'" variant="outline">
+                      MCP
+                    </Badge>
+                  </div>
+                  <p class="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                    {{ row.original.description }}
+                  </p>
+                </div>
+              </div>
+              <Switch
+                :model-value="row.original.enabled"
+                aria-label="启用开关"
+                @update:model-value="setCapabilityEnabled(row.original.id, $event)"
+              />
+            </div>
+            <p class="mt-2 text-xs text-muted-foreground">
+              类型：{{ typeLabels[row.original.type] }} · 接入：{{
+                integrationLabels[row.original.integration]
+              }}
+            </p>
+          </div>
+        </div>
 
         <Empty v-if="table.getRowModel().rows.length === 0" class="py-10">
           <EmptyHeader>
