@@ -69,7 +69,7 @@ export const initialAgentConfig: AgentConfig = {
       type: 'skill',
       name: '翻译',
       description: '在多种语言之间进行翻译',
-      enabled: false,
+      enabled: true,
       integration: 'builtin',
     },
     {
