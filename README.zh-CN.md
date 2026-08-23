@@ -38,6 +38,7 @@
 - **Evals-lite**：基于 `ScenarioAssertion` 对实际回复与 Trace 做轻量回归断言。
 - **主题系统**：明暗模式与多套主题色调预设，并通过 Cookie 持久化。
 - **URL 状态分层**：分区走 path，Playground / 侧栏开关走 query，刷新、分享、前进后退均可恢复。
+- **PWA**：可安装为独立应用，新版本就绪时提示刷新。
 
 ## 技术栈
 
@@ -49,6 +50,7 @@
 - Zod + fast-deep-equal + nanoid + date-fns
 - Nitro Server Routes（Mock API）
 - @nuxtjs/color-mode
+- @vite-pwa/nuxt
 - Biome
 
 ## 快速开始
@@ -62,6 +64,7 @@ pnpm dev
 
 ```bash
 pnpm build      # 生产构建
+pnpm preview    # 预览生产构建（验证 PWA 需走此路径）
 pnpm typecheck  # 全仓类型检查
 pnpm lint       # Biome 检查
 pnpm lint:fix   # Biome 检查并自动修复

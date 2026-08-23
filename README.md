@@ -38,6 +38,7 @@ The default Vercel domain can be unreliable in mainland China. Use `agent-factor
 - **Evals-lite**: `ScenarioAssertion` checks real replies and traces instead of relying on hard-coded outcomes.
 - **Theme system**: light/dark mode and multiple accent color presets, persisted across visits.
 - **URL state layering**: sections live in the path while Playground/sidebar state lives in the query string, so refresh, sharing, and back/forward navigation all recover correctly.
+- **PWA**: installable as a standalone app, with a refresh prompt when a new version is ready.
 
 ## Tech Stack
 
@@ -49,6 +50,7 @@ The default Vercel domain can be unreliable in mainland China. Use `agent-factor
 - Zod + fast-deep-equal + nanoid + date-fns
 - Nitro Server Routes (mock API)
 - @nuxtjs/color-mode
+- @vite-pwa/nuxt
 - Biome
 
 ## Getting Started
@@ -62,6 +64,7 @@ Open `http://localhost:3000`. Other commands:
 
 ```bash
 pnpm build      # production build
+pnpm preview    # preview the production build (required to test PWA)
 pnpm typecheck  # type-check the whole repository
 pnpm lint       # run Biome checks
 pnpm lint:fix   # run Biome checks and fix
