@@ -13,13 +13,15 @@ export const DEFAULT_SECTION = SECTION_IDS[0]
 /**
  * URL 状态分层（对齐 Dify / Linear 的惯例）：
  * - 分区 = path（/persona、/model...）：分区是"页面"语义，用 push 导航，支持浏览器后退；
- * - Playground 抽屉 / 侧栏折叠 = query（?playground=0、?sidebar=0）：视图状态语义，replace 更新不污染历史。
+ * - Playground 抽屉 / 侧栏折叠 = query（?playground=0|1、?sidebar=0）：视图状态语义，replace 更新不污染历史。
+ *   未写 playground 时：桌面默认打开（停靠栏），紧凑视口默认关闭（避免进页就被抽屉盖住）。
  * 刷新、分享链接、前进后退均天然恢复。动态路由单页承载（pages/[section].vue），
  * 分区切换不卸载组件树，Playground 会话与编辑状态天然保留。
  */
 export function useWorkbench() {
   const route = useRoute()
   const router = useRouter()
+  const { isCompact } = useIsMobile()
 
   const sections: WorkbenchSection[] = [
     { id: 'overview', label: '概览', icon: LayoutDashboard },
@@ -43,10 +45,18 @@ export function useWorkbench() {
   })
 
   const playgroundOpen = computed<boolean>({
-    get: () => route.query.playground !== '0',
+    get: () => {
+      const flag = route.query.playground
+      if (flag === '0') return false
+      if (flag === '1') return true
+      return !isCompact.value
+    },
     set: (open) => {
       router.replace({
-        query: { ...route.query, playground: open ? undefined : '0' },
+        query: {
+          ...route.query,
+          playground: open ? (isCompact.value ? '1' : undefined) : '0',
+        },
       })
     },
   })

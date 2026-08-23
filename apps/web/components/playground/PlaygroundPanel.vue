@@ -110,7 +110,7 @@ function onResizeStart(e: PointerEvent) {
     leave-to-class="opacity-0"
   >
     <Button
-      v-if="!playgroundOpen"
+      v-if="!overlayOpen"
       variant="default"
       size="icon"
       class="fixed right-4 bottom-4 z-50 size-12 rounded-full shadow-lg lg:hidden [bottom:max(1rem,env(safe-area-inset-bottom))]"
@@ -143,8 +143,11 @@ function onResizeStart(e: PointerEvent) {
       'max-md:inset-0 max-md:w-full max-md:max-w-none max-md:shadow-none',
       'max-lg:transition-transform motion-reduce:max-lg:transition-none',
       playgroundOpen
-        ? 'max-lg:translate-x-0 max-lg:duration-300 max-lg:ease-out lg:relative lg:w-(--playground-width)'
-        : 'max-lg:pointer-events-none max-lg:translate-x-full max-lg:duration-200 max-lg:ease-in lg:relative lg:w-10',
+        ? 'lg:relative lg:w-(--playground-width)'
+        : 'lg:relative lg:w-10',
+      overlayOpen
+        ? 'max-lg:translate-x-0 max-lg:duration-300 max-lg:ease-out'
+        : 'max-lg:pointer-events-none max-lg:translate-x-full max-lg:duration-200 max-lg:ease-in',
       resizing ? '' : 'lg:transition-[width] duration-200 ease-linear',
     )"
     :style="panelStyle"
