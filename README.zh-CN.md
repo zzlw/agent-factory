@@ -8,6 +8,7 @@
   <a href="https://agent-factory-vert.vercel.app"><img src="https://img.shields.io/badge/Live_Demo-Vercel-black?style=flat-square&amp;logo=vercel&amp;logoColor=white" alt="Live Demo"></a>
   <a href="https://agent-factory.jiawen.live"><img src="https://img.shields.io/badge/国内镜像-agent--factory.jiawen.live-orange?style=flat-square&amp;logo=cloudflare&amp;logoColor=white" alt="国内镜像"></a>
   <a href="https://github.com/zzlw/agent-factory/deployments"><img src="https://img.shields.io/github/deployments/zzlw/agent-factory/production?label=CI%2FCD&amp;style=flat-square&amp;logo=githubactions&amp;logoColor=white" alt="CI/CD"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-brightgreen?style=flat-square" alt="License: MIT"></a>
   <a href="https://github.com/zzlw/agent-factory/commits/main"><img src="https://img.shields.io/github/last-commit/zzlw/agent-factory?style=flat-square&amp;logo=git&amp;logoColor=white" alt="Last Commit"></a>
 </p>
 
@@ -157,3 +158,7 @@ vercel domains verify agent-factory.jiawen.live
 
 - `esbuild` 在 `pnpm-workspace.yaml` 中被固定为 `0.27.7`：pnpm 11 在重解析锁文件时会把 `esbuild@0.28.x` 的平台可选依赖（`@esbuild/darwin-arm64` 等）丢掉，导致 Nitro 构建报 `Host version 0.28.2 does not match binary version 0.27.7`。固定到已锁定的 `0.27.7` 后 esbuild 只保留一份，平台依赖完整。
 - 本地包通过 workspace 协议引用，Nuxt 在 `nuxt.config.ts` 中声明了 `build.transpile`。
+
+## 许可证
+
+MIT © 2026 zzlw

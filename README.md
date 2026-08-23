@@ -8,6 +8,7 @@ Agent Factory is an AI agent low-code builder for developers and non-developers.
   <a href="https://agent-factory-vert.vercel.app"><img src="https://img.shields.io/badge/Live_Demo-Vercel-black?style=flat-square&amp;logo=vercel&amp;logoColor=white" alt="Live Demo"></a>
   <a href="https://agent-factory.jiawen.live"><img src="https://img.shields.io/badge/China_Mirror-agent--factory.jiawen.live-orange?style=flat-square&amp;logo=cloudflare&amp;logoColor=white" alt="China Mirror"></a>
   <a href="https://github.com/zzlw/agent-factory/deployments"><img src="https://img.shields.io/github/deployments/zzlw/agent-factory/production?label=CI%2FCD&amp;style=flat-square&amp;logo=githubactions&amp;logoColor=white" alt="CI/CD"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-brightgreen?style=flat-square" alt="License: MIT"></a>
   <a href="https://github.com/zzlw/agent-factory/commits/main"><img src="https://img.shields.io/github/last-commit/zzlw/agent-factory?style=flat-square&amp;logo=git&amp;logoColor=white" alt="Last Commit"></a>
 </p>
 
@@ -157,3 +158,7 @@ Keep Cloudflare proxying disabled (gray cloud / DNS only) so traffic goes direct
 
 - `esbuild` is pinned to `0.27.7` in `pnpm-workspace.yaml`: pnpm 11 drops platform-specific optional dependencies (`@esbuild/darwin-arm64`, etc.) while re-resolving the lockfile, which can cause Nitro to report `Host version 0.28.2 does not match binary version 0.27.7`. Pinning to `0.27.7` keeps a single esbuild version with complete platform dependencies.
 - Local packages are consumed through workspace protocol; Nuxt declares them in `nuxt.config.ts` under `build.transpile`.
+
+## License
+
+MIT © 2026 zzlw
