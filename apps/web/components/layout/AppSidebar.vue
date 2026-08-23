@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import { Bot } from 'lucide-vue-next'
+import { useSidebar } from '@/components/ui/sidebar'
 
 const { activeSection, sections } = useWorkbench()
+const { isMobile, setOpenMobile } = useSidebar()
 
 // 无后台：用户信息为静态 Mock（答辩口径：真实接入时由账号体系提供）
 const user = {
   name: '演示用户',
   email: 'demo@agent-factory.dev',
+}
+
+function selectSection(id: string) {
+  activeSection.value = id
+  if (isMobile.value) {
+    setOpenMobile(false)
+  }
 }
 </script>
 
@@ -39,7 +48,7 @@ const user = {
               <SidebarMenuButton
                 :data-active="activeSection === section.id"
                 :tooltip="section.label"
-                @click="activeSection = section.id"
+                @click="selectSection(section.id)"
               >
                 <component :is="section.icon" />
                 <span>{{ section.label }}</span>

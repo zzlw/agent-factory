@@ -6,6 +6,7 @@ import type { PromptInputMessage } from '~/components/ai-elements/prompt-input/t
 const route = useRoute()
 const router = useRouter()
 const { playgroundOpen } = useWorkbench()
+const { isMobile } = useIsMobile()
 const {
   messages,
   traceByMessage,
@@ -44,6 +45,9 @@ const queryWidth = computed(() => {
 })
 
 const playgroundWidth = ref(queryWidth.value)
+const contentStyle = computed(() =>
+  !isMobile.value && playgroundOpen.value ? { width: `${playgroundWidth.value}px` } : undefined,
+)
 // 浏览器前进/后退或手动改 URL 时同步宽度（分区切换等 query 不变的导航不会触发）
 watch(queryWidth, (width) => {
   if (width !== playgroundWidth.value) {
@@ -98,16 +102,22 @@ function onResizeStart(e: PointerEvent) {
   <aside
     class="relative flex min-h-0 shrink-0 flex-col overflow-hidden border-l bg-card/50"
     :class="[
-      playgroundOpen ? '' : 'w-10',
+      isMobile
+        ? playgroundOpen
+          ? 'fixed inset-0 z-50 w-full'
+          : 'hidden'
+        : playgroundOpen
+          ? ''
+          : 'w-10',
       resizing ? '' : 'transition-[width] duration-200 ease-linear',
     ]"
-    :style="playgroundOpen ? { width: `${playgroundWidth}px` } : undefined"
+    :style="contentStyle"
   >
     <!-- 展开态内容：宽度跟随面板实时宽度，防过渡期重排；min-h-0 锁死高度链，让滚动收敛在消息区内 -->
     <div
       class="flex min-h-0 flex-1 flex-col transition-opacity duration-200 ease-linear"
       :class="playgroundOpen ? 'opacity-100' : 'pointer-events-none opacity-0'"
-      :style="playgroundOpen ? { width: `${playgroundWidth}px` } : undefined"
+      :style="contentStyle"
     >
       <div class="border-b p-4">
         <div class="mb-3 flex items-start justify-between gap-2">
@@ -226,7 +236,7 @@ function onResizeStart(e: PointerEvent) {
 
     <!-- 可拖拽分隔条：系统原生 col-resize 光标，hover / 拖拽中分界线高亮（ResizeHandle 共享组件） -->
     <ResizeHandle
-      v-if="playgroundOpen"
+      v-if="playgroundOpen && !isMobile"
       mode="resize"
       :active="resizing"
       @resize-start="onResizeStart"
@@ -234,6 +244,7 @@ function onResizeStart(e: PointerEvent) {
 
     <!-- 收起态窄竖轨：覆盖在容器左侧，展开时淡出 -->
     <div
+      v-if="!isMobile"
       class="absolute inset-y-0 left-0 flex w-10 flex-col items-center transition-opacity duration-200 ease-linear"
       :class="playgroundOpen ? 'pointer-events-none opacity-0' : 'opacity-100'"
     >
@@ -250,5 +261,15 @@ function onResizeStart(e: PointerEvent) {
         Playground
       </p>
     </div>
+    <Button
+      v-if="isMobile && !playgroundOpen"
+      variant="default"
+      size="icon"
+      class="fixed right-4 bottom-4 z-50 size-12 rounded-full shadow-lg"
+      aria-label="打开 Playground"
+      @click="playgroundOpen = true"
+    >
+      <PanelRightOpen class="size-5" />
+    </Button>
   </aside>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { MoreHorizontal } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
 const agentStore = useAgentStore()
@@ -57,7 +58,7 @@ watch(
   >
     <SidebarTrigger />
     <Separator orientation="vertical" class="!h-4" />
-    <Breadcrumb>
+    <Breadcrumb class="hidden md:flex">
       <BreadcrumbList>
         <BreadcrumbItem>
           <Input
@@ -72,27 +73,46 @@ watch(
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
+    <span class="min-w-0 truncate text-sm font-medium md:hidden">
+      {{ activeSectionLabel }}
+    </span>
     <Badge :variant="statusVariant">
       {{ statusLabel }} · v{{ agentStore.version }}
     </Badge>
     <div class="ml-auto flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        :disabled="agentStore.saving"
-        @click="agentStore.saveAgent()"
-      >
-        {{ agentStore.saving ? '保存中' : '保存' }}
-      </Button>
-      <Button variant="ghost" size="sm" title="模拟下一次保存/发布失败" @click="armFailure">
-        失败演示
-      </Button>
-      <Dialog v-model:open="publishOpen">
-        <DialogTrigger as-child>
-          <Button size="sm" :disabled="agentStore.publishing">
-            {{ agentStore.publishing ? '发布中' : publishLabel }}
+      <div class="hidden items-center gap-2 md:flex">
+        <Button
+          variant="outline"
+          size="sm"
+          :disabled="agentStore.saving"
+          @click="agentStore.saveAgent()"
+        >
+          {{ agentStore.saving ? '保存中' : '保存' }}
+        </Button>
+        <Button variant="ghost" size="sm" title="模拟下一次保存/发布失败" @click="armFailure">
+          失败演示
+        </Button>
+        <Button size="sm" :disabled="agentStore.publishing" @click="publishOpen = true">
+          {{ agentStore.publishing ? '发布中' : publishLabel }}
+        </Button>
+      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button variant="ghost" size="icon" class="size-8 md:hidden" aria-label="更多操作">
+            <MoreHorizontal class="size-4" />
           </Button>
-        </DialogTrigger>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" class="w-40">
+          <DropdownMenuItem :disabled="agentStore.saving" @click="agentStore.saveAgent()">
+            保存
+          </DropdownMenuItem>
+          <DropdownMenuItem @click="armFailure">失败演示</DropdownMenuItem>
+          <DropdownMenuItem :disabled="agentStore.publishing" @click="publishOpen = true">
+            {{ agentStore.publishing ? '发布中' : '发布' }}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Dialog v-model:open="publishOpen">
         <DialogContent>
           <DialogHeader>
             <DialogTitle>发布当前配置</DialogTitle>
