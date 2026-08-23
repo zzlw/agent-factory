@@ -2,8 +2,8 @@ import type { TestScenario } from '@agent-factory/agent-core'
 
 export const testScenarios: TestScenario[] = [
   {
-    id: 'capability',
-    label: '测试能力',
+    id: 'weather',
+    label: '测试天气查询',
     input: '北京今天天气怎么样？',
     description: '验证天气 Tool 开关是否生效',
     assertion: {

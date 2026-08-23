@@ -89,7 +89,7 @@ packages/
 
 ```text
 1. 打开 /overview，查看当前 Agent 状态、能力摘要与线上差异
-2. 在 Playground 使用测试场景芯片发送“测试能力”
+2. 在 Playground 使用测试场景芯片发送“测试天气查询”
 3. 修改 System Prompt，顶栏状态变为 Draft
 4. 展开助手消息的“执行轨迹”查看 Trace
 5. 点击“运行全部场景”，查看场景通过 / 失败摘要
