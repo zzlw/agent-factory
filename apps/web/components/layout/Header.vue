@@ -117,6 +117,8 @@ watch(
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ThemeColorSelector />
+      <ThemeModeToggle />
       <Button
         as-child
         variant="ghost"

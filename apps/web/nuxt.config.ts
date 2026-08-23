@@ -2,13 +2,22 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
-  modules: ['@pinia/nuxt', '@pinia/colada-nuxt', 'shadcn-nuxt', '@nuxt/fonts'],
+  modules: [
+    '@pinia/nuxt',
+    '@pinia/colada-nuxt',
+    'shadcn-nuxt',
+    '@nuxt/fonts',
+    '@nuxtjs/color-mode',
+  ],
   shadcn: {
     prefix: '',
     componentDir: '~/components/ui',
   },
   compatibilityDate: '2025-07-15',
   telemetry: false,
+  colorMode: {
+    classSuffix: '',
+  },
   routeRules: {
     '/': { redirect: '/overview' },
   },
