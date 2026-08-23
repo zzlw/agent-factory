@@ -25,7 +25,7 @@ export const testScenarios: TestScenario[] = [
   {
     id: 'translation',
     label: '测试翻译',
-    input: '请把这句话翻译成英文',
+    input: '请把“你好，我是智能助手”翻译成英文',
     description: '验证翻译 Skill 开关是否生效',
     assertion: {
       requiresCapability: '翻译',

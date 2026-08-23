@@ -66,14 +66,56 @@ function isTranslationRequest(input: string): boolean {
   )
 }
 
-function resolveMockTranslation(input: string): string {
+function resolveTargetLanguage(input: string): 'ja' | 'fr' | 'en' {
   if (input.includes('日语') || input.includes('日文')) {
-    return 'こんにちは、私はあなたのスマートアシスタントです。'
+    return 'ja'
   }
   if (input.includes('法语') || input.includes('法文')) {
-    return 'Bonjour, je suis votre assistant intelligent.'
+    return 'fr'
   }
-  return 'Hello, I am your intelligent assistant.'
+  return 'en'
+}
+
+function extractSourceText(input: string): string | null {
+  const match = input.match(/[“「"']([^”」"']+)[”」"']/)
+  return match?.[1] ?? null
+}
+
+function resolveMockTranslation(input: string): string {
+  const source = extractSourceText(input)
+  if (!source) {
+    return '请告诉我要翻译的内容，例如：请把“你好”翻译成英文。'
+  }
+
+  const target = resolveTargetLanguage(input)
+  if (source.includes('我是智能助手')) {
+    if (target === 'ja') {
+      return '私はあなたのスマートアシスタントです。'
+    }
+    if (target === 'fr') {
+      return 'Je suis votre assistant intelligent.'
+    }
+    return 'Hello, I am your intelligent assistant.'
+  }
+  if (source.includes('你好')) {
+    if (target === 'ja') {
+      return 'こんにちは。'
+    }
+    if (target === 'fr') {
+      return 'Bonjour.'
+    }
+    return 'Hello.'
+  }
+  if (source.includes('谢谢')) {
+    if (target === 'ja') {
+      return 'ありがとうございます。'
+    }
+    if (target === 'fr') {
+      return 'Merci.'
+    }
+    return 'Thank you.'
+  }
+  return '暂时无法翻译这段内容。'
 }
 
 function enabledKnowledgeBaseSummary(config: AgentConfig): string {
