@@ -9,3 +9,5 @@ dist
 .env.*
 .pnpm-store
 .vercel
+/方案.md
+/前端线下任务.md
