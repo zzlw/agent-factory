@@ -9,6 +9,7 @@ import {
 } from '@tanstack/vue-table'
 import { RotateCcw } from 'lucide-vue-next'
 import { h } from 'vue'
+import { toast } from 'vue-sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
@@ -16,6 +17,8 @@ const agentStore = useAgentStore()
 const { isMobile } = useIsMobile()
 
 const pendingRollback = ref<AgentSnapshot | null>(null)
+// AlertDialogAction 会先把 open 置 false，同步清空 pending 会导致确认时快照已丢
+let rollbackSnapshot: AgentSnapshot | null = null
 const rollbackOpen = computed({
   get: () => pendingRollback.value !== null,
   set: (open) => {
@@ -24,6 +27,11 @@ const rollbackOpen = computed({
     }
   },
 })
+
+function requestRollback(snapshot: AgentSnapshot) {
+  rollbackSnapshot = snapshot
+  pendingRollback.value = snapshot
+}
 
 const history = computed(() => [...agentStore.publishHistory].reverse())
 const currentVersion = computed(
@@ -60,7 +68,7 @@ const columns = [
           variant: 'outline',
           size: 'sm',
           onClick: () => {
-            pendingRollback.value = snapshot
+            requestRollback(snapshot)
           },
         },
         { default: () => [h(RotateCcw, { class: 'size-4' }), '回滚到此版本'] },
@@ -80,9 +88,15 @@ const table = useVueTable({
 })
 
 function confirmRollback() {
-  if (pendingRollback.value) {
-    agentStore.rollbackToVersion(pendingRollback.value)
+  const snapshot = rollbackSnapshot ?? pendingRollback.value
+  if (!snapshot) {
+    return
   }
+  agentStore.rollbackToVersion(snapshot)
+  toast.success(`已将 v${snapshot.version} 载入草稿`, {
+    description: '保存 / 发布后才会成为线上版本',
+  })
+  rollbackSnapshot = null
   pendingRollback.value = null
 }
 
@@ -167,7 +181,7 @@ function formatTime(iso: string | null): string {
                 v-else
                 variant="outline"
                 size="sm"
-                @click="pendingRollback = row.original"
+                @click="requestRollback(row.original)"
               >
                 <RotateCcw class="size-4" />
                 回滚
