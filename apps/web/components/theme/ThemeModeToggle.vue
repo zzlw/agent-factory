@@ -17,7 +17,7 @@ function toggleColorMode() {
     aria-label="切换明暗模式"
     @click="toggleColorMode"
   >
-    <Sun v-if="!isDark" class="size-4" />
-    <Moon v-else class="size-4" />
+    <Sun class="size-4 dark:hidden" />
+    <Moon class="hidden size-4 dark:block" />
   </Button>
 </template>
