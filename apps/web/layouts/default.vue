@@ -5,8 +5,11 @@ const { sidebarOpen } = useWorkbench()
 
 <template>
   <SidebarProvider v-model:open="sidebarOpen">
-    <ClientOnly fallback-tag="template">
+    <ClientOnly>
       <AppSidebar />
+      <template #fallback>
+        <div class="contents" aria-hidden="true" />
+      </template>
     </ClientOnly>
     <!-- h-svh 锁死视口（app-shell 模型）：经二分实验验证，滚动修复的决定性手段是 PlaygroundPanel 内消息区的 absolute 解耦；此处视口锁死作为纵深防御，保证未来任何面板内容都不会把页面撑出滚动条 -->
     <SidebarInset class="relative flex h-svh flex-col">
