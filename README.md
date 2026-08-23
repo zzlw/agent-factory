@@ -35,6 +35,7 @@ The default Vercel domain can be unreliable in mainland China. Use `agent-factor
 - **Save and publish**: `Cmd/Ctrl+S` save, changelog-driven publishing, and simulated failure paths.
 - **Version management**: immutable publish history, field-level diff, and rollback to a previous version.
 - **Evals-lite**: `ScenarioAssertion` checks real replies and traces instead of relying on hard-coded outcomes.
+- **Theme system**: light/dark mode and multiple accent color presets, persisted across visits.
 - **URL state layering**: sections live in the path while Playground/sidebar state lives in the query string, so refresh, sharing, and back/forward navigation all recover correctly.
 
 ## Tech Stack
@@ -46,6 +47,7 @@ The default Vercel domain can be unreliable in mainland China. Use `agent-factor
 - TanStack Vue Table v8 + vee-validate + @vee-validate/zod
 - Zod + fast-deep-equal + nanoid + date-fns
 - Nitro Server Routes (mock API)
+- @nuxtjs/color-mode
 - Biome
 
 ## Getting Started

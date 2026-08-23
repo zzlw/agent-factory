@@ -35,6 +35,7 @@
 - **保存与发布**：支持 `Cmd/Ctrl+S` 保存、发布说明 changelog、失败路径演示。
 - **版本管理**：不可变发布历史、字段级 diff、回滚到历史版本。
 - **Evals-lite**：基于 `ScenarioAssertion` 对实际回复与 Trace 做轻量回归断言。
+- **主题系统**：明暗模式与多套主题色调预设，并通过 Cookie 持久化。
 - **URL 状态分层**：分区走 path，Playground / 侧栏开关走 query，刷新、分享、前进后退均可恢复。
 
 ## 技术栈
@@ -46,6 +47,7 @@
 - TanStack Vue Table v8 + vee-validate + @vee-validate/zod
 - Zod + fast-deep-equal + nanoid + date-fns
 - Nitro Server Routes（Mock API）
+- @nuxtjs/color-mode
 - Biome
 
 ## 快速开始
