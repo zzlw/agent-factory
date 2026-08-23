@@ -18,7 +18,11 @@ watch(activeSection, () => {
 
 <template>
   <div class="flex min-h-0 flex-1">
-    <section ref="sectionEl" class="@container/main min-w-0 flex-1 overflow-y-auto p-4 lg:p-6">
+    <section
+      ref="sectionEl"
+      class="@container/main min-w-0 flex-1 overflow-y-auto p-4 lg:p-6"
+      :style="{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }"
+    >
       <OverviewPanel v-if="activeSection === 'overview'" />
       <PersonaPanel v-if="activeSection === 'persona'" />
       <ModelPanel v-if="activeSection === 'model'" />

@@ -4,6 +4,7 @@ import { toast } from 'vue-sonner'
 
 const agentStore = useAgentStore()
 const { activeSectionLabel } = useWorkbench()
+const { isMobile } = useIsMobile()
 const GITHUB_REPO_URL = 'https://github.com/zzlw/agent-factory'
 
 const statusLabel = computed(() => {
@@ -112,7 +113,7 @@ watch(
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <Dialog v-model:open="publishOpen">
+      <Dialog v-if="!isMobile" v-model:open="publishOpen">
         <DialogContent>
           <DialogHeader>
             <DialogTitle>发布当前配置</DialogTitle>
@@ -137,6 +138,31 @@ watch(
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <Drawer v-else v-model:open="publishOpen">
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>发布当前配置</DrawerTitle>
+            <DrawerDescription>
+              将保存并发布当前配置，生成新版本 v{{ agentStore.version + 1 }}。
+            </DrawerDescription>
+          </DrawerHeader>
+          <div class="grid gap-2 px-4">
+            <Label for="publish-changelog-mobile">发布说明（可选）</Label>
+            <Textarea
+              id="publish-changelog-mobile"
+              v-model="changelog"
+              placeholder="例如：启用天气查询能力"
+              rows="3"
+            />
+          </div>
+          <DrawerFooter>
+            <Button variant="outline" @click="publishOpen = false">取消</Button>
+            <Button :disabled="agentStore.publishing" @click="confirmPublish">
+              {{ agentStore.publishing ? '发布中' : '确认发布' }}
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
       <ClientOnly>
         <ThemeColorSelector />
         <ThemeModeToggle />
