@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { MoreHorizontal } from 'lucide-vue-next'
+import { Github, Moon, MoreHorizontal, Palette, Sun } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
 const agentStore = useAgentStore()
 const { activeSectionLabel } = useWorkbench()
 const { isMobile } = useIsMobile()
+const { activeTheme, themeColorOptions } = useThemeColor()
+const colorMode = useColorMode()
+const isDark = computed(() => colorMode.value === 'dark')
 const GITHUB_REPO_URL = 'https://github.com/zzlw/agent-factory'
+
+function toggleColorMode() {
+  colorMode.preference = isDark.value ? 'light' : 'dark'
+}
 
 const statusLabel = computed(() => {
   if (agentStore.status === 'draft') return '草稿'
@@ -33,16 +40,6 @@ async function confirmPublish() {
   }
 }
 
-async function armFailure() {
-  await $fetch('/api/agent/fail' as string & {}, {
-    method: 'POST',
-    body: { enabled: true },
-  })
-  toast.info('已武装失败演示', {
-    description: '下一次保存或发布将返回 500',
-  })
-}
-
 watch(
   () => agentStore.error,
   (message) => {
@@ -55,11 +52,11 @@ watch(
 
 <template>
   <header
-    class="sticky top-0 z-10 flex h-(--header-height) shrink-0 items-center gap-3 border-b bg-background px-4 md:px-6"
+    class="sticky top-0 z-10 flex h-(--header-height) min-w-0 shrink-0 items-center gap-2 border-b bg-background px-3 sm:gap-3 sm:px-4 md:px-6"
   >
-    <SidebarTrigger />
-    <Separator orientation="vertical" class="!h-4" />
-    <Breadcrumb class="hidden md:flex">
+    <SidebarTrigger class="shrink-0" />
+    <Separator orientation="vertical" class="!h-4 shrink-0" />
+    <Breadcrumb class="hidden min-w-0 md:flex">
       <BreadcrumbList>
         <BreadcrumbItem>
           <Input
@@ -77,11 +74,11 @@ watch(
     <span class="min-w-0 truncate text-sm font-medium md:hidden">
       {{ activeSectionLabel }}
     </span>
-    <Badge :variant="statusVariant">
+    <Badge class="shrink-0" :variant="statusVariant">
       {{ statusLabel }} · v{{ agentStore.version }}
     </Badge>
-    <div class="ml-auto flex items-center gap-2">
-      <div class="hidden items-center gap-2 md:flex">
+    <div class="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
+      <div class="hidden items-center gap-2 lg:flex">
         <Button
           variant="outline"
           size="sm"
@@ -90,26 +87,51 @@ watch(
         >
           {{ agentStore.saving ? '保存中' : '保存' }}
         </Button>
-        <Button variant="ghost" size="sm" title="模拟下一次保存/发布失败" @click="armFailure">
-          失败演示
-        </Button>
         <Button size="sm" :disabled="agentStore.publishing" @click="publishOpen = true">
           {{ agentStore.publishing ? '发布中' : publishLabel }}
         </Button>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
-          <Button variant="ghost" size="icon" class="size-8 md:hidden" aria-label="更多操作">
+          <Button variant="ghost" size="icon" class="size-8 lg:hidden" aria-label="更多操作">
             <MoreHorizontal class="size-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" class="w-40">
+        <DropdownMenuContent align="end" class="w-48">
           <DropdownMenuItem :disabled="agentStore.saving" @click="agentStore.saveAgent()">
             保存
           </DropdownMenuItem>
-          <DropdownMenuItem @click="armFailure">失败演示</DropdownMenuItem>
           <DropdownMenuItem :disabled="agentStore.publishing" @click="publishOpen = true">
             {{ agentStore.publishing ? '发布中' : '发布' }}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger class="gap-2">
+              <Palette class="size-4" />
+              主题色调
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuRadioGroup v-model="activeTheme">
+                <DropdownMenuRadioItem
+                  v-for="option in themeColorOptions"
+                  :key="option.id"
+                  :value="option.id"
+                >
+                  {{ option.label }}
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+          <DropdownMenuItem @click="toggleColorMode">
+            <Moon v-if="isDark" class="size-4" />
+            <Sun v-else class="size-4" />
+            {{ isDark ? '切换浅色' : '切换深色' }}
+          </DropdownMenuItem>
+          <DropdownMenuItem as-child>
+            <a :href="GITHUB_REPO_URL" target="_blank" rel="noopener noreferrer">
+              <Github class="size-4" />
+              GitHub 仓库
+            </a>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -163,15 +185,15 @@ watch(
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
-      <ClientOnly>
+      <div class="hidden items-center gap-2 lg:flex">
         <ThemeColorSelector />
         <ThemeModeToggle />
-      </ClientOnly>
+      </div>
       <Button
         as-child
         variant="ghost"
         size="icon"
-        class="size-8 text-muted-foreground hover:text-foreground active:scale-[0.98]"
+        class="hidden size-8 text-muted-foreground hover:text-foreground active:scale-[0.98] lg:inline-flex"
       >
         <a
           :href="GITHUB_REPO_URL"

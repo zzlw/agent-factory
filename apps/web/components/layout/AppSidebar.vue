@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Bot } from 'lucide-vue-next'
 import { useSidebar } from '@/components/ui/sidebar'
 
 const { activeSection, sections } = useWorkbench()
@@ -22,22 +21,19 @@ function selectSection(id: string) {
 <template>
   <Sidebar collapsible="icon">
     <SidebarHeader>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <!-- 用 SidebarMenuButton 承载品牌块：折叠时自动 size-8 居中，与菜单图标列对齐 -->
-          <SidebarMenuButton size="lg" tooltip="Agent Factory 智能体工作台">
-            <div
-              class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground"
-            >
-              <Bot class="size-4" />
-            </div>
-            <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-semibold">Agent Factory</span>
-              <span class="truncate text-xs text-muted-foreground">智能体工作台</span>
-            </div>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
+      <div
+        class="flex items-center px-1 py-1 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0"
+      >
+        <span
+          class="hidden size-8 items-center justify-center rounded-md bg-[#E2231A] px-1 group-data-[collapsible=icon]:inline-flex"
+        >
+          <LenovoLogo class="w-full text-white" />
+        </span>
+        <div class="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+          <LenovoLogo class="mb-1.5 h-3 w-[3.75rem] text-[#E2231A]" />
+          <p class="mt-1 text-xs text-muted-foreground">智能体工作台</p>
+        </div>
+      </div>
     </SidebarHeader>
     <SidebarContent>
       <SidebarGroup>

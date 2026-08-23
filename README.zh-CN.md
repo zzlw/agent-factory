@@ -33,7 +33,7 @@
 - **Agent 配置**：人设与开场、模型与语音、能力（Tool / Skill / Knowledge Base）开关管理。
 - **状态机**：`Draft` / `Saved` / `Published` 三态，由三个配置快照实时推导。
 - **Playground**：流式回复、工具调用卡片、执行轨迹 Trace、测试场景一键回归。
-- **保存与发布**：支持 `Cmd/Ctrl+S` 保存、发布说明 changelog、失败路径演示。
+- **保存与发布**：支持 `Cmd/Ctrl+S` 保存、发布说明 changelog。
 - **版本管理**：不可变发布历史、字段级 diff、回滚到历史版本。
 - **Evals-lite**：基于 `ScenarioAssertion` 对实际回复与 Trace 做轻量回归断言。
 - **主题系统**：明暗模式与多套主题色调预设，并通过 Cookie 持久化。
@@ -117,7 +117,7 @@ Web 应用负责 UI 与客户端状态，通过 `$fetch('/api/...')` 访问 Nitr
 - **不变量**：`publishedConfig === publishHistory[last].config`，`version === publishHistory[last].version`。
 - **状态边界**：Pinia 只维护跨组件共享的 Agent 配置与发布状态；消息流和 Trace 由 `useMockChat` 管理，不放进 Pinia。
 - **请求快照**：Playground 每次对话请求体携带当前 `config` 快照，`mock-engine` 依据请求体回复，不读取前端全局状态。
-- **服务端边界**：前端统一使用 `$fetch('/api/...')`，Nitro Server Route 负责结构化响应与失败路径模拟。
+- **服务端边界**：前端统一使用 `$fetch('/api/...')`，Nitro Server Route 负责结构化响应。
 
 ## 演示走查
 
@@ -131,7 +131,6 @@ Web 应用负责 UI 与客户端状态，通过 `$fetch('/api/...')` 访问 Nitr
 7. 点击“发布更新”，填写发布说明，生成新版本
 8. 再次修改配置，进入 /versions 查看字段级 diff
 9. 从历史版本点击“回滚到此版本”，配置载入草稿
-10. 顶栏“失败演示”后再保存或发布，验证 Nitro 500 失败路径
 ```
 
 ## 部署与国内访问

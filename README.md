@@ -33,7 +33,7 @@ The default Vercel domain can be unreliable in mainland China. Use `agent-factor
 - **Agent configuration**: persona and greeting, model and voice, and capability toggles for Tool / Skill / Knowledge Base.
 - **State machine**: `Draft` / `Saved` / `Published` is derived from three configuration snapshots in real time.
 - **Playground**: streaming replies, tool-call cards, execution traces, and one-click scenario regression.
-- **Save and publish**: `Cmd/Ctrl+S` save, changelog-driven publishing, and simulated failure paths.
+- **Save and publish**: `Cmd/Ctrl+S` save and changelog-driven publishing.
 - **Version management**: immutable publish history, field-level diff, and rollback to a previous version.
 - **Evals-lite**: `ScenarioAssertion` checks real replies and traces instead of relying on hard-coded outcomes.
 - **Theme system**: light/dark mode and multiple accent color presets, persisted across visits.
@@ -117,7 +117,7 @@ The web app composes the UI and client state, talks to Nitro server routes over 
 - **Invariants**: `publishedConfig === publishHistory[last].config` and `version === publishHistory[last].version`.
 - **State boundaries**: Pinia owns shared agent configuration and publishing state; message flow and traces live in `useMockChat`.
 - **Request snapshots**: every Playground request sends the current `config` snapshot, and `mock-engine` replies from that snapshot instead of reading frontend global state.
-- **Server boundary**: the frontend always uses `$fetch('/api/...')`; Nitro server routes provide structured responses and simulate failure paths.
+- **Server boundary**: the frontend always uses `$fetch('/api/...')`; Nitro server routes provide structured responses.
 
 ## Demo Walkthrough
 
@@ -131,7 +131,6 @@ The web app composes the UI and client state, talks to Nitro server routes over 
 7. Click "Publish Update", add a changelog, and create a new version
 8. Change the configuration again, then open /versions to inspect the field-level diff
 9. Roll back to an earlier version and confirm the draft is loaded
-10. Arm the failure demo, then save or publish to verify the Nitro 500 path
 ```
 
 ## Deployment and China Access

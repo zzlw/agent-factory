@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { testScenarios } from '@agent-factory/mock-engine'
 import { PanelRightClose, PanelRightOpen, RotateCcw, Square } from 'lucide-vue-next'
+import { cn } from '@/lib/utils'
 import type { PromptInputMessage } from '~/components/ai-elements/prompt-input/types'
 
 const route = useRoute()
 const router = useRouter()
 const { playgroundOpen } = useWorkbench()
-const { isMobile } = useIsMobile()
+const { isCompact } = useIsMobile()
 const {
   messages,
   traceByMessage,
@@ -45,9 +46,8 @@ const queryWidth = computed(() => {
 })
 
 const playgroundWidth = ref(queryWidth.value)
-const contentStyle = computed(() =>
-  !isMobile.value && playgroundOpen.value ? { width: `${playgroundWidth.value}px` } : undefined,
-)
+const overlayOpen = computed(() => isCompact.value && playgroundOpen.value)
+const panelStyle = computed(() => `--playground-width: ${playgroundWidth.value}px`)
 // 浏览器前进/后退或手动改 URL 时同步宽度（分区切换等 query 不变的导航不会触发）
 watch(queryWidth, (width) => {
   if (width !== playgroundWidth.value) {
@@ -98,34 +98,75 @@ function onResizeStart(e: PointerEvent) {
 </script>
 
 <template>
-  <!-- 抽屉动画与左侧菜单同机制：单一容器宽度过渡 + 内容层 opacity；拖拽期间关闭过渡保证跟手 -->
-  <aside
-    class="relative flex min-h-0 shrink-0 flex-col overflow-hidden border-l bg-card/50"
-    :class="[
-      isMobile
-        ? playgroundOpen
-          ? 'fixed inset-0 z-50 w-full'
-          : 'hidden'
-        : playgroundOpen
-          ? ''
-          : 'w-10',
-      resizing ? '' : 'transition-[width] duration-200 ease-linear',
-    ]"
-    :style="contentStyle"
+  <!-- 收起态 FAB 必须在 aside 外：aside 关闭时离开文档流，放里面会一起消失 -->
+  <Transition
+    enter-active-class="transition-opacity duration-200 ease-out"
+    enter-from-class="opacity-0"
+    leave-active-class="transition-opacity duration-150 ease-in"
+    leave-to-class="opacity-0"
   >
+    <Button
+      v-if="!playgroundOpen"
+      variant="default"
+      size="icon"
+      class="fixed right-4 bottom-4 z-50 size-12 rounded-full shadow-lg lg:hidden [bottom:max(1rem,env(safe-area-inset-bottom))]"
+      aria-label="打开 Playground"
+      @click="playgroundOpen = true"
+    >
+      <PanelRightOpen class="size-5" />
+    </Button>
+  </Transition>
+
+  <Transition
+    enter-active-class="transition-opacity duration-300 ease-out"
+    enter-from-class="opacity-0"
+    leave-active-class="transition-opacity duration-200 ease-in"
+    leave-to-class="opacity-0"
+  >
+    <div
+      v-if="overlayOpen"
+      class="fixed inset-0 z-40 bg-black/40"
+      aria-hidden="true"
+      @click="playgroundOpen = false"
+    />
+  </Transition>
+
+  <!-- 桌面：宽度过渡；紧凑视口：右侧抽屉滑入/滑出（与左侧 Sheet 同手势语义） -->
+  <Transition
+    :css="isCompact"
+    enter-active-class="transition-transform duration-300 ease-out"
+    enter-from-class="translate-x-full"
+    leave-active-class="transition-transform duration-200 ease-in"
+    leave-to-class="translate-x-full"
+  >
+    <aside
+      v-show="playgroundOpen || !isCompact"
+      :class="cn(
+        'flex min-h-0 shrink-0 flex-col overflow-hidden border-l bg-background',
+        'max-lg:fixed max-lg:inset-y-0 max-lg:right-0 max-lg:z-50 max-lg:h-svh max-lg:w-80 max-lg:max-w-[85vw] max-lg:shadow-lg',
+        'max-md:inset-0 max-md:w-full max-md:max-w-none max-md:shadow-none',
+        playgroundOpen
+          ? 'lg:relative lg:w-(--playground-width)'
+          : 'max-lg:hidden lg:relative lg:w-10',
+        resizing ? '' : 'lg:transition-[width] duration-200 ease-linear',
+      )"
+      :style="panelStyle"
+      :role="overlayOpen ? 'dialog' : undefined"
+      :aria-modal="overlayOpen ? true : undefined"
+      :aria-label="overlayOpen ? 'Playground' : undefined"
+    >
     <!-- 展开态内容：宽度跟随面板实时宽度，防过渡期重排；min-h-0 锁死高度链，让滚动收敛在消息区内 -->
     <div
-      class="flex min-h-0 flex-1 flex-col transition-opacity duration-200 ease-linear"
+      class="flex h-full min-h-0 flex-1 flex-col transition-opacity duration-200 ease-linear"
       :class="playgroundOpen ? 'opacity-100' : 'pointer-events-none opacity-0'"
-      :style="contentStyle"
     >
-      <div class="border-b p-4">
+      <div class="shrink-0 overflow-y-auto border-b p-4 max-lg:max-h-[45%]">
         <div class="mb-3 flex items-start justify-between gap-2">
-          <div>
+          <div class="min-w-0">
             <h2 class="text-sm font-semibold">Playground</h2>
-            <p class="text-xs text-muted-foreground">实时调试 · 随配置更新</p>
+            <p class="hidden text-xs text-muted-foreground sm:block">实时调试 · 随配置更新</p>
           </div>
-          <div class="flex items-center gap-1">
+          <div class="flex shrink-0 items-center gap-1">
             <Button
               variant="ghost"
               size="sm"
@@ -133,12 +174,12 @@ function onResizeStart(e: PointerEvent) {
               @click="resetSession"
             >
               <RotateCcw class="size-3.5" />
-              重置会话
+              <span class="hidden sm:inline">重置会话</span>
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              class="size-7"
+              class="size-7 shrink-0"
               title="收起调试面板"
               @click="playgroundOpen = false"
             >
@@ -222,12 +263,14 @@ function onResizeStart(e: PointerEvent) {
       </div>
 
       <!-- 输入区：PromptInput 体系（Enter 提交含中文输入法保护、提交自动清空、失败恢复草稿） -->
-      <div class="border-t p-3">
+      <div class="shrink-0 border-t p-3">
         <PromptInput @submit="handleSubmit">
           <!-- 不套 PromptInputBody（display:contents 容器）：InputGroup 的 flex-col 布局靠直接子元素 data-align 检测触发，多包一层会退化成横排 -->
           <PromptInputTextarea placeholder="输入消息测试当前配置" />
           <PromptInputFooter>
-            <span class="text-[13px] text-muted-foreground">Enter 发送 · Shift+Enter 换行</span>
+            <span class="hidden text-[13px] text-muted-foreground sm:inline">
+              Enter 发送 · Shift+Enter 换行
+            </span>
             <PromptInputSubmit :disabled="sending || streaming" />
           </PromptInputFooter>
         </PromptInput>
@@ -236,16 +279,16 @@ function onResizeStart(e: PointerEvent) {
 
     <!-- 可拖拽分隔条：系统原生 col-resize 光标，hover / 拖拽中分界线高亮（ResizeHandle 共享组件） -->
     <ResizeHandle
-      v-if="playgroundOpen && !isMobile"
+      v-if="playgroundOpen"
+      class="hidden lg:block"
       mode="resize"
       :active="resizing"
       @resize-start="onResizeStart"
     />
 
-    <!-- 收起态窄竖轨：覆盖在容器左侧，展开时淡出 -->
+    <!-- 收起态窄竖轨：覆盖在容器左侧，展开时淡出；仅桌面停靠态使用 -->
     <div
-      v-if="!isMobile"
-      class="absolute inset-y-0 left-0 flex w-10 flex-col items-center transition-opacity duration-200 ease-linear"
+      class="absolute inset-y-0 left-0 hidden w-10 flex-col items-center transition-opacity duration-200 ease-linear lg:flex"
       :class="playgroundOpen ? 'pointer-events-none opacity-0' : 'opacity-100'"
     >
       <Button
@@ -261,15 +304,6 @@ function onResizeStart(e: PointerEvent) {
         Playground
       </p>
     </div>
-    <Button
-      v-if="isMobile && !playgroundOpen"
-      variant="default"
-      size="icon"
-      class="fixed right-4 bottom-4 z-50 size-12 rounded-full shadow-lg"
-      aria-label="打开 Playground"
-      @click="playgroundOpen = true"
-    >
-      <PanelRightOpen class="size-5" />
-    </Button>
-  </aside>
+    </aside>
+  </Transition>
 </template>

@@ -2,7 +2,7 @@
 import { defaultDocument, useEventListener, useVModel } from '@vueuse/core'
 import { TooltipProvider } from 'reka-ui'
 import type { HTMLAttributes, Ref } from 'vue'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { cn } from '@/lib/utils'
 import {
   provideSidebarContext,
@@ -29,26 +29,8 @@ const emits = defineEmits<{
   'update:open': [open: boolean]
 }>()
 
-const isMobile = ref(false)
+const { isMobile } = useIsMobile()
 const openMobile = ref(false)
-
-let mobileMediaQuery: MediaQueryList | null = null
-
-function syncMobileState() {
-  if (!mobileMediaQuery) {
-    mobileMediaQuery = window.matchMedia('(max-width: 768px)')
-  }
-  isMobile.value = mobileMediaQuery.matches
-}
-
-onMounted(() => {
-  syncMobileState()
-  mobileMediaQuery?.addEventListener('change', syncMobileState)
-})
-
-onBeforeUnmount(() => {
-  mobileMediaQuery?.removeEventListener('change', syncMobileState)
-})
 
 const open = useVModel(props, 'open', emits, {
   defaultValue: props.defaultOpen ?? false,
@@ -101,7 +83,7 @@ provideSidebarContext({
         '--sidebar-width': SIDEBAR_WIDTH,
         '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
       }"
-      :class="cn('group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full', props.class)"
+      :class="cn('group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full min-w-0', props.class)"
       v-bind="$attrs"
     >
       <slot />

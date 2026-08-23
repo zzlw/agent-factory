@@ -26,8 +26,19 @@ export const THEME_COLOR_OPTIONS: ThemeColorOption[] = [
   { id: 'mono', label: '单色' },
 ]
 
-const THEME_COLOR_COOKIE = 'active_theme'
-const THEME_CLASS_PREFIX = 'theme-'
+export const THEME_COLOR_COOKIE = 'active_theme'
+export const THEME_CLASS_PREFIX = 'theme-'
+
+const CUSTOM_THEME_IDS = THEME_COLOR_OPTIONS.map((option) => option.id).filter(
+  (id) => id !== 'default',
+)
+
+export function isCustomTheme(value: string | null | undefined): value is ThemeColorName {
+  return CUSTOM_THEME_IDS.includes(value as ThemeColorName)
+}
+
+/** 首屏阻塞脚本：在首次绘制前把 cookie 里的色调写到 <html>，避免先闪默认色。 */
+export const THEME_COLOR_BOOTSTRAP_SCRIPT = `(function(){try{var m=document.cookie.match(/(?:^|; )${THEME_COLOR_COOKIE}=([^;]*)/);if(!m)return;var t=decodeURIComponent(m[1]);try{t=JSON.parse(t)}catch(e){}if(${JSON.stringify(CUSTOM_THEME_IDS)}.indexOf(t)<0)return;document.documentElement.classList.add("${THEME_CLASS_PREFIX}"+t)}catch(e){}})()`
 
 export function useThemeColor() {
   const activeTheme = useCookie<ThemeColorName>(THEME_COLOR_COOKIE, {
@@ -43,12 +54,12 @@ export function useThemeColor() {
     for (const option of THEME_COLOR_OPTIONS) {
       root.classList.remove(`${THEME_CLASS_PREFIX}${option.id}`)
     }
-    if (activeTheme.value !== 'default') {
+    if (isCustomTheme(activeTheme.value)) {
       root.classList.add(`${THEME_CLASS_PREFIX}${activeTheme.value}`)
     }
   }
 
-  onMounted(applyThemeClass)
+  applyThemeClass()
   watch(activeTheme, applyThemeClass)
 
   return {

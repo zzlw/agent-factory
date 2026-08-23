@@ -76,7 +76,6 @@ The state machine must preserve these invariants:
 - Server routes read request bodies and return structured responses
 - `replyEngine` in `packages/mock-engine` replies from the `config` snapshot in the request body; it must not read frontend global state
 - Do not introduce MSW as a runtime mock
-- Simulate failure paths through Nitro server routes returning 500
 
 ## Code Quality
 
