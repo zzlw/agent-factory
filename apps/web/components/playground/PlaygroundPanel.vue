@@ -137,7 +137,21 @@ function onResizeStart(e: PointerEvent) {
           </div>
         </div>
         <ConfigSummary />
-        <p v-if="configChanged" class="mt-2 text-xs text-destructive">配置已变更，建议重置会话</p>
+        <div
+          v-if="configChanged"
+          role="status"
+          class="mt-2 flex items-center justify-between gap-2 rounded-md border bg-muted px-2 py-1.5"
+        >
+          <p class="text-xs text-muted-foreground">配置已变更，建议重置会话</p>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="h-6 shrink-0 px-2 text-xs"
+            @click="resetSession"
+          >
+            重置会话
+          </Button>
+        </div>
         <div class="mt-3 space-y-2">
           <div class="flex flex-wrap items-center gap-1.5">
             <Button
