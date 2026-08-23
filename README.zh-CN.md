@@ -79,6 +79,35 @@ packages/
   mock-engine/   Mock 数据、测试场景与回复规则引擎
 ```
 
+## 架构总览
+
+```mermaid
+flowchart TB
+    subgraph Web["apps/web · Nuxt 4 SSR"]
+        UI["Pages / Components"]
+        Client["Composables / Pinia Stores"]
+        Server["Nitro Server Routes"]
+    end
+
+    subgraph Domain["packages/agent-core"]
+        Core["Types · Zod Schemas · Status · Diff · Evals"]
+    end
+
+    subgraph Mock["packages/mock-engine"]
+        Scenarios["Mock Data / Scenarios"]
+        Reply["replyEngine"]
+    end
+
+    UI --> Client
+    Client -->|"HTTP /api"| Server
+    Server --> Reply
+    Reply --> Scenarios
+    Client --> Core
+    Server --> Core
+```
+
+Web 应用负责 UI 与客户端状态，通过 `$fetch('/api/...')` 访问 Nitro Server Routes；领域规则集中在 `agent-core`，Server Routes 再调用 `mock-engine` 依据请求快照生成结构化回复。
+
 ## 核心架构
 
 - **三快照状态机**：`config` / `savedConfig` / `publishedConfig` 通过 `fast-deep-equal` 推导状态。

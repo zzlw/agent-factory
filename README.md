@@ -79,6 +79,35 @@ packages/
   mock-engine/   mock data, test scenarios, and reply rule engine
 ```
 
+## Architecture Overview
+
+```mermaid
+flowchart TB
+    subgraph Web["apps/web · Nuxt 4 SSR"]
+        UI["Pages / Components"]
+        Client["Composables / Pinia Stores"]
+        Server["Nitro Server Routes"]
+    end
+
+    subgraph Domain["packages/agent-core"]
+        Core["Types · Zod Schemas · Status · Diff · Evals"]
+    end
+
+    subgraph Mock["packages/mock-engine"]
+        Scenarios["Mock Data / Scenarios"]
+        Reply["replyEngine"]
+    end
+
+    UI --> Client
+    Client -->|"HTTP /api"| Server
+    Server --> Reply
+    Reply --> Scenarios
+    Client --> Core
+    Server --> Core
+```
+
+The web app composes the UI and client state, talks to Nitro server routes over `$fetch('/api/...')`, and keeps the domain rules in `agent-core`. Server routes call `mock-engine` to produce structured replies from the request snapshot.
+
 ## Core Architecture
 
 - **Three-snapshot state machine**: `config` / `savedConfig` / `publishedConfig` are compared with `fast-deep-equal` to derive state.
